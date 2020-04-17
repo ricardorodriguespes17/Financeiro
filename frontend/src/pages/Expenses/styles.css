@@ -1,6 +1,6 @@
 @import "../../styles/global.css";
 
-.wallet {
+.expenses {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-gap: 20px;
@@ -8,7 +8,7 @@
   margin-top: 20px;
 }
 
-.wallet li {
+.expenses li {
   height: 100px;
   background-color: var(--box-color);
   border-radius: 5px;
@@ -20,11 +20,15 @@
   font-size: medium;
 }
 
-.wallet li button {
+.expenses li button {
   position: absolute;
   width: 24px;
   height: 24px;
   align-self: flex-end;
+}
+
+.expenses li text {
+  cursor: pointer;
 }
 
 .actions {

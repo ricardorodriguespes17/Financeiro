@@ -8,28 +8,47 @@ import { MdDelete as DeleteIcon, MdMenu as MenuIcon } from "react-icons/md";
 import "./styles.css";
 import formatCurrency from "../../utils/formatCurrency";
 
-export default function Wallet() {
+export default function Revenues() {
   const navigation = useHistory();
 
   const [showMenu, setShowMenu] = useState(false);
+  const [itemSelected, setItemSelected] = useState({});
+  const [showModal, setShowModal] = useState(false);
   const [revenue, setRevenue] = useState("300");
   const [receipt, setReceipt] = useState("0");
   const [expense, setExpense] = useState("258");
-  const [walletItems, setWalletItems] = useState([
-    { id: "1", title: "Dinheiro", value: "15" },
-    { id: "1", title: "Conta Nubank", value: "245" },
-    { id: "1", title: "Conta Caixa", value: "0" },
-    { id: "1", title: "Conta Neon", value: "0" },
-  ]);
+
+  const revenues = [
+    {
+      id: "1",
+      title: "Mãe",
+      value: "250",
+      description: "Para pagar o aluguel",
+      date: new Date(2020, 3, 25),
+    },
+    {
+      id: "2",
+      title: "Thiago",
+      value: "4",
+      description: "Para pagar o Spotify",
+      date: new Date(2020, 3, 20),
+    },
+  ];
+
+  function showRevenue(item) {
+    setItemSelected(item);
+    setShowModal(true);
+  }
 
   return (
     <div className="container">
       <Drawer setShow={setShowMenu} show={showMenu} navigation={navigation} />
+      <Modal item={itemSelected} show={showModal} setShow={setShowModal} />
       <header>
         <button className="button-icon" onClick={() => setShowMenu(true)}>
           <MenuIcon size={36} />
         </button>
-        <text>Sua carteira</text>
+        <text>Entradas</text>
         <button
           className="button-secundary"
           onClick={() => navigation.push("login")}
@@ -60,14 +79,19 @@ export default function Wallet() {
             </text>
           </div>
         </div>
-        <ul className="wallet">
-          {walletItems.map((item) => (
+        <ul className="revenues">
+          {revenues.map((item) => (
             <li key={item.id}>
               <button className="button-icon">
                 <DeleteIcon size={24} color="#00a86b" />
               </button>
-              <text>{item.title}</text>
-              <text>{formatCurrency(item.value)}</text>
+              <text onClick={() => showRevenue(item)}>{item.title}</text>
+              <text onClick={() => showRevenue(item)}>
+                {Intl.NumberFormat("pt-br", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(item.value)}
+              </text>
             </li>
           ))}
         </ul>
