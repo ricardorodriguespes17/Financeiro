@@ -1,5 +1,4 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
 import { Drawer } from "@material-ui/core";
 
 import { MdArrowBack as BackIcon } from "react-icons/md";
@@ -8,8 +7,6 @@ import setTheme from "../../styles/setTheme";
 import "./styles.css";
 
 export default function DrawerLeft({ show, setShow }) {
-  const navigation = useHistory();
-
   return (
     <Drawer
       anchor="left"

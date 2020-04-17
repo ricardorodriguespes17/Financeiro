@@ -1,0 +1,14 @@
+export const LOAD_EXPENSES = "LOAD_EXPENSES";
+export const ADD_EXPENSE = "ADD_EXPENSE";
+export const DELETE_EXPENSE = "DELETE_EXPENSE";
+export const SET_EXPENSE = "SET_EXPENSE";
+
+export const LOAD_RECEIPTS = "LOAD_RECEIPTS";
+export const ADD_RECEIPT = "ADD_RECEIPT";
+export const DELETE_RECEIPT = "DELETE_RECEIPT";
+export const SET_RECEIPT = "SET_RECEIPT";
+
+export const LOAD_REVENUES = "LOAD_REVENUES";
+export const ADD_REVENUE = "ADD_REVENUE";
+export const DELETE_REVENUE = "DELETE_REVENUE";
+export const SET_REVENUE = "SET_REVENUE";

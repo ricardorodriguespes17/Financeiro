@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
 import Drawer from "../../components/Drawer";
 import formatCurrency from "../../utils/formatCurrency";
 import formatDate from "../../utils/formatDate";
