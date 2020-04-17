@@ -1,15 +1,24 @@
 import React from "react";
+import Content from "../../components/Content";
+import { useHistory } from "react-router-dom";
 
 import "./styles.css";
 
 export default function Home() {
+  const navigation = useHistory();
+
   return (
     <div className="container">
       <header>
         <text>Financeiro</text>
-        <button className="button-secundary">Fazer Login</button>
+        <button
+          className="button-secundary"
+          onClick={() => navigation.push("login")}
+        >
+          Fazer Login
+        </button>
       </header>
-      <div className="body"></div>
+      <Content></Content>
     </div>
   );
 }

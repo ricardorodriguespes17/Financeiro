@@ -5,6 +5,8 @@ import formatCurrency from "../../utils/formatCurrency";
 
 import { MdClose as CloseIcon } from "react-icons/md";
 
+import "./styles.css";
+
 export default function ModalCenter({ item, show, setShow }) {
   return (
     <Modal open={show} className="modal">

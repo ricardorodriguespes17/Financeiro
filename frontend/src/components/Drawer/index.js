@@ -1,11 +1,15 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 import { Drawer } from "@material-ui/core";
 
 import { MdArrowBack as BackIcon } from "react-icons/md";
 
 import setTheme from "../../styles/setTheme";
+import "./styles.css";
 
-export default function DrawerLeft({ show, setShow, navigation }) {
+export default function DrawerLeft({ show, setShow }) {
+  const navigation = useHistory();
+
   return (
     <Drawer
       anchor="left"
@@ -20,15 +24,6 @@ export default function DrawerLeft({ show, setShow, navigation }) {
         <text>Financeiro</text>
       </div>
       <div className="drawer-body">
-        <div
-          className="modal-item"
-          onClick={() => navigation.push("dashboard")}
-        >
-          <text>Inicio</text>
-        </div>
-        <div className="modal-item" onClick={() => navigation.push("settings")}>
-          <text>Configurações</text>
-        </div>
         <div className="drawer-item-theme">
           <text>Tema:</text>
           <button

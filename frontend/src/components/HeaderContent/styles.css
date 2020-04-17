@@ -1,0 +1,51 @@
+@import "../../styles/global.css";
+
+.header-content {
+  background-color: var(--box-color);
+  width: 100%;
+  height: 70px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  padding: 5px;
+  display: flex;
+  flex-direction: row;
+}
+
+.header-content button {
+  width: 5%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  cursor: pointer;
+}
+
+.header-content div {
+  width: 19%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.header-content div:hover {
+  opacity: 0.5;
+}
+
+.header-content text {
+  text-align: center;
+  border-radius: 2px;
+}
+
+.header-content .visible-of {
+  background-color: var(--tertiary-color);
+  color: transparent;
+}
+
+.header-content .selected {
+  font-weight: bold;
+}
