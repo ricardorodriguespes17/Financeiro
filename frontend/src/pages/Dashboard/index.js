@@ -68,25 +68,25 @@ export default function Dashboard() {
       </Header>
       <Content>
         <li className="grid-item">
-          <text className="title">Recebimentos de hoje</text>
+          <label className="title">Recebimentos de hoje</label>
         </li>
 
         <li className="grid-item">
-          <text className="title">{`Dispesas de hoje - ${formatDate(
+          <label className="title">{`Dispesas de hoje - ${formatDate(
             new Date()
-          )}`}</text>
+          )}`}</label>
           <ul className="list">
             {expensesToday.map((item) => (
               <li>
-                <text>{item.title}</text>
-                <text>{formatCurrency(item.value)}</text>
+                <label>{item.title}</label>
+                <label>{formatCurrency(item.value)}</label>
               </li>
             ))}
           </ul>
         </li>
 
         <li className="grid-item">
-          <text className="title">Dispesas por categoria</text>
+          <label className="title">Dispesas por categoria</label>
         </li>
       </Content>
     </div>

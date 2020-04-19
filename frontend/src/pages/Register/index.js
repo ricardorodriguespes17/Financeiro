@@ -14,7 +14,7 @@ export default function Register() {
   return (
     <div className="container">
       <header>
-        <text>Financeiro</text>
+        <label>Financeiro</label>
         <button
           className="button-secondary"
           onClick={() => navigation.push("login")}
@@ -24,13 +24,13 @@ export default function Register() {
       </header>
       <Content small>
         <form>
-          <text>Nome</text>
-          <input type="text" />
-          <text>Email</text>
+          <label>Nome</label>
+          <input type="label" />
+          <label>Email</label>
           <input type="email" />
-          <text>Senha</text>
+          <label>Senha</label>
           <input type="password" />
-          <text>Confirmar senha</text>
+          <label>Confirmar senha</label>
           <input type="password" />
           <button type="submit" className="button-primary" onClick={onRegister}>
             Entrar

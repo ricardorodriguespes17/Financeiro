@@ -1,7 +1,5 @@
 @import "../../styles/global.css";
-
-.content,
-.content-small {
+.content, .content-small {
   width: 90%;
   min-width: 300px;
   height: 100%;
@@ -13,14 +11,14 @@
   color: #00a86b;
   font-size: large;
   padding: 10px;
+  overflow: auto;
 }
 
 .content-small {
   width: 40%;
 }
 
-.content form,
-.content-small form {
+.content form, .content-small form {
   width: 100%;
   height: 100%;
   display: flex;
@@ -29,8 +27,7 @@
   justify-content: center;
 }
 
-.content form button,
-.content-small form button {
+.content form button, .content-small form button {
   margin-top: 20px;
 }
 
@@ -40,24 +37,6 @@
   grid-gap: 20px;
   list-style: none;
   margin-top: 20px;
-}
-
-.content .grid .grid-item {
-  height: 150px;
-  background-color: var(--box-color);
-  border-radius: 5px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  font-size: medium;
-  justify-content: center;
-}
-
-.content .grid .grid-item button {
-  position: absolute;
-  width: 24px;
-  height: 24px;
-  align-self: flex-end;
 }
 
 .content .grid .title {
@@ -73,8 +52,50 @@
   justify-content: space-between;
 }
 
-.content .grid div text {
+.content .grid div label {
   cursor: pointer;
+}
+
+.content .grid .grid-item {
+  height: 150px;
+  background-color: var(--box-color);
+  border-radius: 5px;
+  padding: 5px 20px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  font-size: medium;
+}
+
+.content .grid .grid-item .list {
+  list-style: none;
+}
+
+.content .grid .grid-item .box-button {
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.content .grid .grid-item .box-text {
+  width: 100%;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.content .grid .grid-item .box-text div {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.content .grid .grid-item .box-text .color-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  margin-right: 5px;
 }
 
 .content .action {
@@ -82,8 +103,4 @@
   display: flex;
   flex-direction: row;
   justify-content: center;
-}
-
-.content .grid .grid-item .list {
-  list-style: none;
 }

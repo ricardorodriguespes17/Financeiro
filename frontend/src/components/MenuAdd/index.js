@@ -1,25 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Modal from "@material-ui/core/Modal";
-
-import formatCurrency from "../../utils/formatCurrency";
 
 import { MdClose as CloseIcon } from "react-icons/md";
 
 import "./styles.css";
 
-export default function ModalCenter({
-  item,
-  show,
-  setShow,
-  dataType,
-  onSetItem,
-}) {
-  const [id, setId] = useState("");
+export default function MenuAdd({ onAdd, setShow, show, dataType }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [value, setValue] = useState("0");
-  const [color, setColor] = useState("");
-  const [category, setCategory] = useState("");
+  const [value, setValue] = useState("");
+  const [color, setColor] = useState("#00A86B");
+  const [category, setCategory] = useState("Outros");
   const [date, setDate] = useState("");
 
   const expenseCategories = [
@@ -35,30 +26,9 @@ export default function ModalCenter({
     "Viagem",
   ];
 
-  useEffect(() => {
-    loadItem();
-  }, [item]);
-
-  function loadItem() {
-    setId(item.id);
-    setTitle(item.title);
-    setDescription(item.description);
-    setValue(item.value);
-    setColor(item.color ? item.color : "#00A86B");
-    setCategory(item.category ? item.category : "Outros");
-    setDate(item.date ? item.date : new Date().toISOString().split("T")[0]);
-  }
-
   function add() {
     if (title === "" || value === "") {
-      alert("Faltou algo\nVerifique os dados e tente novamente");
-      return;
-    }
-
-    var formatedValue = String(value).replace(/,/g, ".");
-
-    if (formatCurrency(formatedValue).includes("NaN")) {
-      alert("Erro\nValor inválido, digite novamente");
+      alert("Faltou algo... verifique os dados e tente novamente");
       return;
     }
 
@@ -66,65 +36,71 @@ export default function ModalCenter({
 
     if (dataType === "expense") {
       item = {
-        id,
         title,
         description,
-        value: formatedValue,
+        value,
         category,
-        date:
-          date === ""
-            ? new Date().toISOString().split("T")[0]
-            : new Date(date).toISOString().split("T")[0],
+        date: date === "" ? new Date() : new Date(date),
       };
     } else if (dataType === "receipt") {
       item = {
-        id,
         title,
         description,
-        value: formatedValue,
-        date:
-          date === ""
-            ? new Date().toISOString().split("T")[0]
-            : new Date(date).toISOString().split("T")[0],
+        value,
+        date: date === "" ? new Date() : new Date(date),
       };
     } else {
       item = {
-        id,
         title,
         description,
-        value: formatedValue,
+        value,
         color,
       };
     }
 
-    onSetItem(item);
+    onAdd(item);
+    clearData();
     setShow(false);
   }
 
+  function closeMenu() {
+    clearData();
+    setShow(false);
+  }
+
+  function clearData() {
+    setTitle("");
+    setDescription("");
+    setValue("");
+    setDate("");
+    setColor("#00A86B");
+    setCategory("Outros");
+  }
+
   return (
-    <Modal open={show} className="modal">
-      <div className="body-modal">
-        <div className="box-button">
-          <button className="button-icon" onClick={() => setShow(false)}>
+    <Modal open={show} className="menu">
+      <div className="body-menu">
+        <div className="box-button-close">
+          <button className="button-icon" onClick={closeMenu}>
             <CloseIcon size={24} color="#00A86b" />
           </button>
         </div>
-        <div className="box-label">
-          <label>Título: </label>
+        <div className="box-input">
+          <label>Título</label>
           <input
             value={title}
             onChange={(event) => setTitle(event.target.value)}
           />
         </div>
         <div className="box-text-area">
-          <label>Descrição: </label>
+          <label>Descrição</label>
           <textarea
             value={description}
             onChange={(event) => setDescription(event.target.value)}
           />
         </div>
-        <div className="box-label">
-          <label>Valor: R$</label>
+        <div className="box-input">
+          <label>Valor</label>
           <input
             type="number"
             value={value}
@@ -133,16 +109,16 @@ export default function ModalCenter({
         </div>
         {dataType === "expense" ? (
           <>
-            <div className="box-label">
-              <label>Pagamento: </label>
+            <div className="box-input">
+              <label>Data do pagamento</label>
               <input
                 type="date"
                 value={date}
                 onChange={(event) => setDate(event.target.value)}
               />
             </div>
-            <div className="box-label">
-              <label>Categoria: </label>
+            <div className="box-input">
+              <label>Categoria</label>
               <select
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
@@ -154,8 +130,8 @@ export default function ModalCenter({
             </div>
           </>
         ) : dataType === "receipt" ? (
-          <div className="box-label">
-            <label>Pagamento: </label>
+          <div className="box-input">
+            <label>Data do pagamento</label>
             <input
               type="date"
               value={date}
@@ -164,7 +140,7 @@ export default function ModalCenter({
           </div>
         ) : (
           <div className="box-color">
-            <label>Cor: </label>
+            <label>Cor</label>
             <input
               type="color"
               value={color}
@@ -174,7 +150,7 @@ export default function ModalCenter({
         )}
         <div className="box-button-add">
           <button className="button-secundary" onClick={add}>
-            Salvar
+            Adicionar
           </button>
         </div>
       </div>

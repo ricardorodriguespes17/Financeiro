@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <div className="container">
       <header>
-        <text>Financeiro</text>
+        <label>Financeiro</label>
         <button
           className="button-secundary"
           onClick={() => navigation.push("login")}

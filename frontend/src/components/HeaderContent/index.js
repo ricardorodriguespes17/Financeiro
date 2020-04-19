@@ -15,13 +15,37 @@ import {
 
 import "./styles.css";
 
+import { useSelector } from "react-redux";
+
 export default function HeaderContent() {
   const navigation = useHistory();
   const location = navigation.location.pathname.split("/")[1];
 
-  const [revenue, setRevenue] = useState("300");
-  const [receipt, setReceipt] = useState("0");
-  const [expense, setExpense] = useState("258");
+  const revenuesTotal = useSelector((state) =>
+    state.revenues.length > 0
+      ? state.revenues
+          .map((item) => item.value)
+          .reduce((total, numero) => parseFloat(total) + parseFloat(numero))
+      : 0
+  );
+  const receiptsTotal = useSelector((state) =>
+    state.receipts.length > 0
+      ? state.receipts
+          .map((item) => item.value)
+          .reduce((total, numero) => parseFloat(total) + parseFloat(numero))
+      : 0
+  );
+  const expensesTotal = useSelector((state) =>
+    state.expenses.length > 0
+      ? state.expenses
+          .map((item) => item.value)
+          .reduce((total, numero) => parseFloat(total) + parseFloat(numero))
+      : 0
+  );
+  const profitValue =
+    parseFloat(revenuesTotal) +
+    parseFloat(receiptsTotal) -
+    parseFloat(expensesTotal);
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
@@ -55,42 +79,46 @@ export default function HeaderContent() {
         ) : (
           <HomeOutineIcon size={32} color="#00A86B" />
         )}
-        <text>Início</text>
+        <label>Início</label>
       </div>
       <div
         className={location === "wallet" ? "selected" : ""}
         onClick={() => navigation.push("wallet")}
       >
-        <text>Saldo em contas</text>
-        <text className={visible ? "" : "visible-of"}>
-          {formatCurrency(revenue)}
-        </text>
+        <label>Saldo em contas</label>
+        <label className={visible ? "" : "visible-of"}>
+          {formatCurrency(revenuesTotal)}
+        </label>
       </div>
       <div
-        className={location === "revenues" ? "selected" : ""}
-        onClick={() => navigation.push("revenues")}
+        className={location === "receipts" ? "selected" : ""}
+        onClick={() => navigation.push("receipts")}
       >
-        <text>Recebimentos</text>
-        <text className={visible ? "" : "visible-of"}>
-          {formatCurrency(receipt)}
-        </text>
+        <label>Recebimentos</label>
+        <label className={visible ? "" : "visible-of"}>
+          {formatCurrency(receiptsTotal)}
+        </label>
       </div>
       <div
         className={location === "expenses" ? "selected" : ""}
         onClick={() => navigation.push("expenses")}
       >
-        <text>Despesas</text>
-        <text className={visible ? "" : "visible-of"}>
-          {formatCurrency(expense)}
-        </text>
+        <label>Despesas</label>
+        <label className={visible ? "" : "visible-of"}>
+          {formatCurrency(expensesTotal)}
+        </label>
       </div>
-      <div>
-        <text>Lucro</text>
-        <text className={visible ? "" : "visible-of"}>
-          {formatCurrency(
-            parseFloat(revenue) + parseFloat(receipt) - parseFloat(expense)
-          )}
-        </text>
+      <div
+        className={
+          profitValue < 0 && visible
+            ? "profit-box-negative"
+            : "profit-box-positive"
+        }
+      >
+        <label>Lucro</label>
+        <label className={visible ? "" : "visible-of"}>
+          {formatCurrency(profitValue)}
+        </label>
       </div>
       <button className="button-icon" onClick={setVisibility}>
         {visible ? (

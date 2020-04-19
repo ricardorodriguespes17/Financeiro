@@ -18,11 +18,11 @@ export default function DrawerLeft({ show, setShow }) {
         <button className="button-icon" onClick={() => setShow(false)}>
           <BackIcon size={36} />
         </button>
-        <text>Financeiro</text>
+        <label>Financeiro</label>
       </div>
       <div className="drawer-body">
         <div className="drawer-item-theme">
-          <text>Tema:</text>
+          <label>Tema:</label>
           <button
             className="circle-theme-green"
             onClick={() => setTheme("green")}

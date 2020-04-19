@@ -1,42 +1,40 @@
 import React, { useState } from "react";
 import Drawer from "../../components/Drawer";
 import Modal from "../../components/Modal";
-
-import formatCurrency from "../../utils/formatCurrency";
+import Header from "../../components/Header";
+import Content from "../../components/Content";
+import MenuAdd from "../../components/MenuAdd";
 
 import { MdDelete as DeleteIcon } from "react-icons/md";
 
-import Header from "../../components/Header";
-import Content from "../../components/Content";
-
-import { useDispatch, useSelector } from "react-redux";
-import MenuAdd from "../../components/MenuAdd";
+import formatCurrency from "../../utils/formatCurrency";
+import { useSelector, useDispatch } from "react-redux";
 import allActions from "../../store/actions";
 
-export default function Expenses() {
+export default function Receipts() {
   const [showMenu, setShowMenu] = useState(false);
   const [itemSelected, setItemSelected] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [showMenuAdd, setShowMenuAdd] = useState(false);
 
-  const expenses = useSelector((state) => state.expenses);
+  const receipts = useSelector((state) => state.receipts);
   const dispatch = useDispatch();
 
-  function showExpenses(item) {
+  function showReceipt(item) {
     setItemSelected(item);
     setShowModal(true);
   }
 
-  function addExpense(item) {
-    dispatch(allActions.expense.addExpense(item));
+  function addReceipt(item) {
+    dispatch(allActions.receipt.addReceipt(item));
   }
 
-  function deleteExpense(item) {
-    dispatch(allActions.expense.deleteExpense(item));
+  function deleteReceipt(item) {
+    dispatch(allActions.receipt.deleteReceipt(item));
   }
 
-  function setExpense(item) {
-    dispatch(allActions.expense.setExpense(item));
+  function setReceipt(item) {
+    dispatch(allActions.receipt.setReceipt(item));
   }
 
   return (
@@ -46,32 +44,32 @@ export default function Expenses() {
         item={itemSelected}
         show={showModal}
         setShow={setShowModal}
-        dataType="expense"
-        onSetItem={setExpense}
+        dataType="receipt"
+        onSetItem={setReceipt}
       />
       <MenuAdd
-        onAdd={addExpense}
+        onAdd={addReceipt}
         setShow={setShowMenuAdd}
         show={showMenuAdd}
-        dataType="expense"
+        dataType="receipt"
       />
-      <Header setShowDrawer={setShowMenu}>Despesas</Header>
+      <Header setShowDrawer={setShowMenu}>Entradas</Header>
       <Content onClickAdd={() => setShowMenuAdd(true)}>
-        {expenses.map((item) => (
+        {receipts.map((item) => (
           <li key={item.id} className="grid-item">
             <div className="box-button">
               <button
                 className="button-icon"
-                onClick={() => deleteExpense(item)}
+                onClick={() => deleteReceipt(item)}
               >
                 <DeleteIcon size={24} color="#00a86b" />
               </button>
             </div>
             <div className="box-text">
-              <label className="title" onClick={() => showExpenses(item)}>
+              <label className="title" onClick={() => showReceipt(item)}>
                 {item.title}
               </label>
-              <label onClick={() => showExpenses(item)}>
+              <label onClick={() => showReceipt(item)}>
                 {formatCurrency(item.value)}
               </label>
             </div>

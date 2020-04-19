@@ -1,5 +1,4 @@
 @import "../../styles/global.css";
-
 .header-content {
   background-color: var(--box-color);
   width: 100%;
@@ -36,7 +35,7 @@
   opacity: 0.5;
 }
 
-.header-content text {
+.header-content label {
   text-align: center;
   border-radius: 2px;
 }
@@ -48,4 +47,16 @@
 
 .header-content .selected {
   font-weight: bold;
+}
+
+.header-content .profit-box-positive label, .header-content .profit-box-negative label {
+  cursor: auto;
+}
+
+.header-content .profit-box-positive:hover, .header-content .profit-box-negative:hover {
+  opacity: 1;
+}
+
+.header-content .profit-box-negative {
+  color: #FF0000;
 }

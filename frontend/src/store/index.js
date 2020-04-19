@@ -1,14 +1,14 @@
 import { combineReducers, createStore, compose, applyMiddleware } from "redux";
 import thunk from "redux-thunk";
 
-import expenseReduce from "./reduces/expense";
-import receiptReduce from "./reduces/receipt";
-import revenueReduce from "./reduces/revenue";
+import expenses from "./reduces/expense";
+import receipts from "./reduces/receipt";
+import revenues from "./reduces/revenue";
 
 const reduces = combineReducers({
-  expenseReduce,
-  receiptReduce,
-  revenueReduce,
+  expenses,
+  receipts,
+  revenues,
 });
 
 const store = createStore(

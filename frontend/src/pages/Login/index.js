@@ -18,13 +18,13 @@ export default function Login() {
   return (
     <div className="container">
       <header>
-        <text>Financeiro</text>
+        <label>Financeiro</label>
       </header>
       <Content small>
         <form>
-          <text>Email</text>
+          <label>Email</label>
           <input type="email" />
-          <text>Senha</text>
+          <label>Senha</label>
           <input type="password" />
           <button type="submit" className="button-primary" onClick={onLogin}>
             Entrar

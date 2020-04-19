@@ -16,15 +16,15 @@
   padding: 20px;
   font-size: x-large;
   width: 500px;
-
+  max-width: 100%;
+  min-width: 300px;
   display: flex;
   flex: 1;
   flex-direction: column;
   justify-content: flex-end;
 }
 
-.drawer-item,
-.drawer-item-theme {
+.drawer-item, .drawer-item-theme {
   width: 100%;
   height: 100px;
   align-items: center;
@@ -42,9 +42,7 @@
   cursor: auto;
 }
 
-.circle-theme-green,
-.circle-theme-dark,
-.circle-theme-light {
+.circle-theme-green, .circle-theme-dark, .circle-theme-light {
   width: 30px;
   height: 30px;
   margin: 0;
