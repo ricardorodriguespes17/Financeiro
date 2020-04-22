@@ -2,19 +2,21 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100%;
 }
 
 .modal .body-modal {
   background-color: var(--box-color);
-  width: 400px;
+  width: 600px;
   max-width: 100%;
-  max-height: 100%;
+  height: 100%;
   border-radius: 5px;
   display: flex;
   flex-direction: column;
   align-items: center;
   border: 1px solid #00a86b;
   padding-bottom: 20px;
+  overflow: auto;
 }
 
 .modal .box-button {
@@ -32,24 +34,24 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 30px;
+  padding: 10px 10px 10px 30px;
   min-width: 390px;
 }
 
 .modal .box-text-area textarea {
-  width: 200px;
+  width: 250px;
   height: 100px;
   resize: none;
-  margin-top: 5px;
   font-size: 14px;
   padding: 10px;
   border-radius: 5px;
   vertical-align: top;
   border: none;
-  background-color: #EFEFEF;
+  background-color: var(--input-edit-bg);
+  color: var(--input-edit-color);
 }
 
-.modal .box-label, .modal .box-color {
+.modal .box-label {
   width: 100%;
   height: 70px;
   display: flex;
@@ -59,22 +61,60 @@
   min-width: 390px;
 }
 
-.modal .box-label label, .modal .box-color label, .modal .box-text-area label {
+.modal .box-label label, .modal .box-text-area label {
   font-weight: bold;
   margin-left: 0;
-  width: 120px;
+  width: 150px;
   color: #00a86b;
 }
 
 .modal .box-label input {
   border: none;
-  background-color: #EFEFEF;
-  width: 200px;
+  background-color: var(--input-edit-bg);
+  color: var(--input-edit-color);
+  width: 250px;
+}
+
+.modal .box-label-value {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.modal .box-label-value .value {
+  width: 50px;
+}
+
+.modal .box-label-checkbox {
+  width: 140px;
+  display: flex;
+  flex-direction: row;
+  margin-left: 10px;
+}
+
+.modal .box-label-checkbox label {
+  width: 0;
+}
+
+.modal .box-label-checkbox .checkbox {
+  width: 25px;
+  height: 25px;
+}
+
+.modal .box-label-checkbox .checkbox {
+  width: 25px;
+  height: 25px;
+}
+
+.modal .box-label .box-parcel {
+  margin-top: 20px;
+  width: 50%;
 }
 
 .modal .box-label select {
   border: none;
-  background-color: #EFEFEF;
+  background-color: var(--input-edit-bg);
+  color: var(--input-edit-color);
   width: 200px;
   height: 40px;
   margin: 0;
@@ -84,15 +124,9 @@
   height: 50px;
 }
 
-.modal .box-color input {
-  border: none;
-  padding: 0;
-  width: 200px;
-  background-color: transparent;
-}
-
-.menu .box-button-add {
+.box-button-add {
   width: 100%;
+  margin-top: 30px;
   display: flex;
   flex-direction: row;
   align-items: center;

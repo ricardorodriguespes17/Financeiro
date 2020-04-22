@@ -1,6 +1,7 @@
 import {
   ADD_RECEIPT,
-  DELETE_RECEIPT,
+  DELETE_RECEIPT_ALL,
+  DELETE_RECEIPT_NEXT,
   SET_RECEIPT,
   LOAD_RECEIPTS,
 } from "./types";
@@ -19,15 +20,26 @@ function setReceipt(receipt) {
   };
 }
 
-function deleteReceipt(receipt) {
+function deleteReceiptAll(receipt) {
   return {
-    type: DELETE_RECEIPT,
+    type: DELETE_RECEIPT_ALL,
+    payload: receipt,
+  };
+}
+
+function deleteReceiptNext(receipt) {
+  return {
+    type: DELETE_RECEIPT_NEXT,
     payload: receipt,
   };
 }
 
 function getReceipt() {
-  return async (dispatch) => {};
+  return async (dispatch) => {
+    const receipts = [];
+
+    loadReceipts(receipts);
+  };
 }
 
 function loadReceipts(receipts) {
@@ -40,6 +52,7 @@ function loadReceipts(receipts) {
 export default {
   addReceipt,
   setReceipt,
-  deleteReceipt,
+  deleteReceiptNext,
+  deleteReceiptAll,
   getReceipt,
 };

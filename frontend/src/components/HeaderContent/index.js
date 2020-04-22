@@ -17,30 +17,18 @@ import "./styles.css";
 
 import { useSelector } from "react-redux";
 
-export default function HeaderContent() {
+export default function HeaderContent({ month, year }) {
   const navigation = useHistory();
   const location = navigation.location.pathname.split("/")[1];
 
   const revenuesTotal = useSelector((state) =>
-    state.revenues.length > 0
-      ? state.revenues
-          .map((item) => item.value)
-          .reduce((total, numero) => parseFloat(total) + parseFloat(numero))
-      : 0
+    state.revenues.length > 0 ? mapMonthValues(state.revenues) : 0
   );
   const receiptsTotal = useSelector((state) =>
-    state.receipts.length > 0
-      ? state.receipts
-          .map((item) => item.value)
-          .reduce((total, numero) => parseFloat(total) + parseFloat(numero))
-      : 0
+    state.receipts.length > 0 ? mapMonthValues(state.receipts) : 0
   );
   const expensesTotal = useSelector((state) =>
-    state.expenses.length > 0
-      ? state.expenses
-          .map((item) => item.value)
-          .reduce((total, numero) => parseFloat(total) + parseFloat(numero))
-      : 0
+    state.expenses.length > 0 ? mapMonthValues(state.expenses) : 0
   );
   const profitValue =
     parseFloat(revenuesTotal) +
@@ -66,6 +54,59 @@ export default function HeaderContent() {
 
     setVisible(visibility);
     localStorage.setItem("visibility", visibility);
+  }
+
+  function mapMonthValues(array) {
+    var monthSelected = month ? month : new Date().getMonth();
+    var yearSelected = year ? year : new Date().getFullYear();
+
+    monthSelected = parseInt(monthSelected) + 1;
+    yearSelected = parseInt(yearSelected);
+
+    var newArray = array.map((item) => {
+      var parcels = item.parcels ? item.parcels - 1 : 0;
+
+      var itemMonth;
+      var itemYear;
+
+      if (item.date) {
+        itemMonth = parseInt(item.date.split("-")[1]) + parcels;
+        itemYear = parseInt(item.date.split("-")[0]);
+      } else {
+        itemMonth = new Date().getMonth() + 1;
+        itemYear = new Date().getFullYear();
+      }
+
+      while (parcels >= 0) {
+        if (
+          (itemMonth === monthSelected && itemYear === yearSelected) ||
+          item.type === "continuous"
+        )
+          return item;
+
+        itemMonth--;
+        parcels--;
+
+        if (itemMonth > 11) {
+          itemMonth = 0;
+          itemYear++;
+        }
+      }
+
+      return null;
+    });
+
+    newArray = newArray.filter((item) => item).map((item) => item.value);
+
+    if (newArray.length === 0) {
+      return 0;
+    }
+
+    newArray = newArray.reduce(
+      (total, numero) => parseFloat(total) + parseFloat(numero)
+    );
+
+    return newArray;
   }
 
   return (

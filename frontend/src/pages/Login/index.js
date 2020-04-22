@@ -2,7 +2,6 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 
 import "./styles.css";
-import Content from "../../components/Content";
 
 export default function Login() {
   const navigation = useHistory();
@@ -20,7 +19,7 @@ export default function Login() {
       <header>
         <label>Financeiro</label>
       </header>
-      <Content small>
+      <div className="login-body">
         <form>
           <label>Email</label>
           <input type="email" />
@@ -33,7 +32,7 @@ export default function Login() {
             Cadastrar
           </button>
         </form>
-      </Content>
+      </div>
     </div>
   );
 }

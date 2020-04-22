@@ -1,94 +1,208 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import Drawer from "../../components/Drawer";
+import { Pie } from "react-chartjs-2";
+
 import formatCurrency from "../../utils/formatCurrency";
 import formatDate from "../../utils/formatDate";
 
 import {
-  MdKeyboardArrowLeft as LeftIcon,
-  MdKeyboardArrowRight as RightIcon,
+  MdArrowForward as ArrowRightIcon,
+  MdMenu as MenuIcon,
 } from "react-icons/md";
 
-import Content from "../../components/Content";
-import Header from "../../components/Header";
+import { useSelector } from "react-redux";
+
+import "./styles.css";
+import HeaderContent from "../../components/HeaderContent";
 
 export default function Dashboard() {
-  const [showMenu, setShowMenu] = useState(false);
-  const [month, setMonth] = useState(new Date().getMonth());
-  const [year, setYear] = useState(new Date().getFullYear());
-  const [expensesToday, setExpensesToday] = useState([
-    { id: "1 ", title: "Spotify", value: "8" },
-    { id: "1 ", title: "Aluguel", value: "250" },
-  ]);
-  const monthsString = [
-    "Janeiro",
-    "Fevereiro",
-    "Março",
-    "Abril",
-    "Maio",
-    "Junho",
-    "Julho",
-    "Agosto",
-    "Setembro",
-    "Outubro",
-    "Novembro",
-    "Dezembro",
-  ];
+  const navigation = useHistory();
 
-  function changeMonth(change) {
-    var newMonth = parseInt(month) + change;
-    var newYear = parseInt(year);
+  const [showDrawer, setShowDrawer] = useState(false);
 
-    if (newMonth === -1) {
-      newMonth = 11;
-      newYear--;
-    }
+  var expensesByCategory = {
+    Outros: { value: 0 },
+    Alimentação: { value: 0 },
+    Casa: { value: 0 },
+    Educação: { value: 0 },
+    Lazer: { value: 0 },
+    Telefonia: { value: 0 },
+    Saúde: { value: 0 },
+    Transporte: { value: 0 },
+    Vestiário: { value: 0 },
+    Viagem: { value: 0 },
+  };
 
-    if (newMonth === 12) {
-      newMonth = 0;
-      newYear++;
-    }
+  useSelector((state) =>
+    mapMonthArray(state.expenses).map((item) => {
+      expensesByCategory[item.category].value += parseInt(item.value);
+      return item;
+    })
+  );
 
-    var date = new Date(newYear, newMonth, 1);
+  const expensesToday = useSelector((state) =>
+    state.expenses.filter((item) =>
+      new Date().toISOString().includes(item.date)
+    )
+  );
 
-    setMonth(date.getMonth());
-    setYear(date.getFullYear());
+  const receiptToday = useSelector((state) =>
+    state.receipts.filter((item) =>
+      new Date().toISOString().includes(item.date)
+    )
+  );
+
+  function mapMonthArray(array) {
+    var monthSelected = new Date().getMonth();
+    var yearSelected = new Date().getFullYear();
+
+    monthSelected = parseInt(monthSelected) + 1;
+    yearSelected = parseInt(yearSelected);
+
+    var newArray = array.map((item) => {
+      var parcels = item.parcels ? item.parcels - 1 : 0;
+      var itemMonth = parseInt(item.date.split("-")[1]) + parcels;
+      var itemYear = parseInt(item.date.split("-")[0]);
+
+      while (parcels >= 0) {
+        if (
+          (itemMonth === monthSelected && itemYear === yearSelected) ||
+          item.type === "continuous"
+        )
+          return item;
+
+        itemMonth--;
+        parcels--;
+
+        if (itemMonth > 11) {
+          itemMonth = 0;
+          itemYear++;
+        }
+      }
+
+      return null;
+    });
+
+    newArray = newArray.filter((item) => item);
+
+    return newArray;
+  }
+
+  function logout() {
+    navigation.push("login");
   }
 
   return (
     <div className="container">
-      <Drawer setShow={setShowMenu} show={showMenu} />
-      <Header setShowDrawer={setShowMenu}>
-        <button className="button-icon" onClick={() => changeMonth(-1)}>
-          <LeftIcon size={36} />
+      <Drawer setShow={setShowDrawer} show={showDrawer} />
+      <header>
+        <button className="button-icon" onClick={() => setShowDrawer(true)}>
+          <MenuIcon size={28} />
         </button>
-        {`${monthsString[month]} / ${year}`}
-        <button className="button-icon" onClick={() => changeMonth(1)}>
-          <RightIcon size={36} />
+        Painel
+        <button className="button-secundary" onClick={logout}>
+          Sair
         </button>
-      </Header>
-      <Content>
-        <li className="grid-item">
-          <label className="title">Recebimentos de hoje</label>
-        </li>
+      </header>
+      {/* Content */}
+      <ul className="content">
+        <HeaderContent />
+        <ul className="grid">
+          <li className="grid-item-dashboard">
+            <label className="title">Recebimentos de hoje</label>
+            <ul className="list">
+              {receiptToday.map((item) => (
+                <li>
+                  <label className="expense-today-title">{item.title}</label>
+                  <label className="expense-today-text">
+                    {formatCurrency(item.value)}
+                  </label>
+                </li>
+              ))}
+            </ul>
+            <button
+              className="button-outline"
+              onClick={() => navigation.push("receipts")}
+            >
+              <label>Ver todos</label>
+              <ArrowRightIcon />
+            </button>
+          </li>
 
-        <li className="grid-item">
-          <label className="title">{`Dispesas de hoje - ${formatDate(
-            new Date()
-          )}`}</label>
-          <ul className="list">
-            {expensesToday.map((item) => (
-              <li>
-                <label>{item.title}</label>
-                <label>{formatCurrency(item.value)}</label>
-              </li>
-            ))}
-          </ul>
-        </li>
+          <li className="grid-item-dashboard">
+            <label className="title">{`Dispesas de hoje - ${formatDate(
+              new Date()
+            )}`}</label>
+            <ul className="list">
+              {expensesToday.map((item) => (
+                <li>
+                  <label className="expense-today-title">{item.title}</label>
+                  <label className="expense-today-text">
+                    {formatCurrency(item.value)}
+                  </label>
+                </li>
+              ))}
+            </ul>
+            <button
+              className="button-outline"
+              onClick={() => navigation.push("expenses")}
+            >
+              <label>Ver todas</label>
+              <ArrowRightIcon />
+            </button>
+          </li>
 
-        <li className="grid-item">
-          <label className="title">Dispesas por categoria</label>
-        </li>
-      </Content>
+          <li className="grid-item-dashboard">
+            <label className="title">Dispesas do mês por categoria</label>
+            <Pie
+              data={{
+                labels: Object.keys(expensesByCategory).filter(
+                  (item) => expensesByCategory[item].value > 0
+                ),
+                datasets: [
+                  {
+                    label: "expenses",
+                    data: Object.keys(expensesByCategory)
+                      .filter((item) => expensesByCategory[item].value > 0)
+                      .map((item) => expensesByCategory[item].value),
+                    backgroundColor: [
+                      "#98FB98",
+                      "#228B22",
+                      "#00FF7F",
+                      "#7CFC00",
+                      "#00FF00",
+                      "#228B22",
+                      "#9ACD32",
+                      "#00FA9A",
+                      "#228B22",
+                      "#ADFF2F",
+                    ],
+                  },
+                ],
+              }}
+              width={100}
+              height={70}
+              options={{
+                elements: {
+                  arc: {
+                    borderColor: "#FFFFFFAA",
+                  },
+                },
+                legend: {
+                  align: "start",
+                  display: true,
+                  labels: {
+                    fontSize: 12,
+                    boxWidth: 20,
+                    usePointStyle: true,
+                  },
+                },
+              }}
+            />
+          </li>
+        </ul>
+      </ul>
     </div>
   );
 }

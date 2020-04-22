@@ -1,6 +1,7 @@
 import {
   ADD_EXPENSE,
-  DELETE_EXPENSE,
+  DELETE_EXPENSE_ALL,
+  DELETE_EXPENSE_NEXT,
   LOAD_EXPENSES,
   SET_EXPENSE,
 } from "../actions/types";
@@ -8,30 +9,34 @@ import {
 const initialState = [
   {
     id: "1",
-    title: "Recarga Oi",
+    title: "Exemplo parcelado",
     value: "20",
     description: "",
-    category: "Telefonia",
-    color: "#FFFFFF",
-    date: "2020-04-01",
+    category: "Outros",
+    date: "2020-05-01",
+    type: "parceled",
+    parcels: 1,
+    paid: false,
   },
   {
     id: "2",
-    title: "Aluguel",
-    value: "250",
+    title: "Exemplo Continuo",
+    value: "100",
     description: "",
-    category: "Casa",
-    color: "#FFFFFF",
+    category: "Alimentação",
     date: "2020-04-30",
+    type: "continuous",
+    paid: false,
   },
   {
     id: "3",
-    title: "Spotify",
+    title: "Exemplo Unico",
     value: "8",
     description: "",
-    category: "Lazer",
-    color: "#FFFFFF",
-    date: "2020-04-20",
+    category: "Casa",
+    date: "2020-04-19",
+    type: "unique",
+    paid: true,
   },
 ];
 
@@ -44,13 +49,14 @@ export default function reduce(state = initialState, action) {
       });
     case LOAD_EXPENSES:
       return action.payload;
+    case DELETE_EXPENSE_ALL:
+      return state.filter((expense) => expense.id !== action.payload.id);
+    case DELETE_EXPENSE_NEXT:
     case SET_EXPENSE:
       return state.map((expense) => {
         if (expense.id === action.payload.id) return action.payload;
         else return expense;
       });
-    case DELETE_EXPENSE:
-      return state.filter((expense) => expense.id !== action.payload.id);
     default:
       return state;
   }

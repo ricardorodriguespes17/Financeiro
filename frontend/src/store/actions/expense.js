@@ -1,8 +1,9 @@
 import {
   ADD_EXPENSE,
-  DELETE_EXPENSE,
   SET_EXPENSE,
   LOAD_EXPENSES,
+  DELETE_EXPENSE_ALL,
+  DELETE_EXPENSE_NEXT,
 } from "./types";
 
 function addExpense(expense) {
@@ -19,15 +20,26 @@ function setExpense(expense) {
   };
 }
 
-function deleteExpense(expense) {
+function deleteExpenseNext(expense) {
   return {
-    type: DELETE_EXPENSE,
+    type: DELETE_EXPENSE_NEXT,
+    payload: expense,
+  };
+}
+
+function deleteExpenseAll(expense) {
+  return {
+    type: DELETE_EXPENSE_ALL,
     payload: expense,
   };
 }
 
 function getExpenses() {
-  return async (dispatch) => {};
+  return async (dispatch) => {
+    const expenses = [];
+
+    loadExpenses(expenses);
+  };
 }
 
 function loadExpenses(expenses) {
@@ -40,6 +52,7 @@ function loadExpenses(expenses) {
 export default {
   addExpense,
   setExpense,
-  deleteExpense,
+  deleteExpenseAll,
+  deleteExpenseNext,
   getExpenses,
 };

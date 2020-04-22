@@ -9,9 +9,11 @@ export default function MenuAdd({ onAdd, setShow, show, dataType }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [value, setValue] = useState("");
-  const [color, setColor] = useState("#00A86B");
   const [category, setCategory] = useState("Outros");
   const [date, setDate] = useState("");
+  const [parcels, setParcels] = useState(0);
+  const [type, setType] = useState("unique");
+  const [paid, setPaid] = useState(false);
 
   const expenseCategories = [
     "Outros",
@@ -28,33 +30,49 @@ export default function MenuAdd({ onAdd, setShow, show, dataType }) {
 
   function add() {
     if (title === "" || value === "") {
-      alert("Faltou algo... verifique os dados e tente novamente");
+      alert("Faltou algo\nVerifique os dados e tente novamente");
+      return;
+    }
+
+    if (type === "parceled" && parcels < 2) {
+      alert(
+        "Parcelamento inválido\nNão é possível parcelar nesse valor e tente novamente"
+      );
       return;
     }
 
     var item;
 
+    var formatedDate = (date === "" ? new Date() : new Date(date))
+      .toISOString()
+      .split("T")[0];
+
     if (dataType === "expense") {
       item = {
         title,
         description,
-        value,
+        value: parcels > 0 ? value / parcels : value,
         category,
-        date: date === "" ? new Date() : new Date(date),
+        date: formatedDate,
+        paid,
+        type,
+        parcels,
       };
     } else if (dataType === "receipt") {
       item = {
         title,
         description,
         value,
-        date: date === "" ? new Date() : new Date(date),
+        date: formatedDate,
+        paid,
+        type,
+        parcels,
       };
     } else {
       item = {
         title,
         description,
         value,
-        color,
       };
     }
 
@@ -73,8 +91,10 @@ export default function MenuAdd({ onAdd, setShow, show, dataType }) {
     setDescription("");
     setValue("");
     setDate("");
-    setColor("#00A86B");
     setCategory("Outros");
+    setType("unique");
+    setParcels(0);
+    setPaid(false);
   }
 
   return (
@@ -85,30 +105,95 @@ export default function MenuAdd({ onAdd, setShow, show, dataType }) {
             <CloseIcon size={24} color="#00A86b" />
           </button>
         </div>
-        <div className="box-input">
-          <label>Título</label>
-          <input
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-          />
+        <div className="box-inputs-row">
+          <div className="box-input">
+            <label>Título</label>
+            <input
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+            />
+          </div>
+          <div className="box-input">
+            <label>Valor</label>
+            <input
+              type="number"
+              value={value}
+              onChange={(event) => setValue(event.target.value)}
+            />
+            {dataType !== "revenue" ? (
+              <>
+                {" "}
+                <label>Pago</label>
+                <input
+                  className="checkbox"
+                  type="checkbox"
+                  value={paid}
+                  onChange={(event) => setPaid(event.target.value)}
+                />{" "}
+              </>
+            ) : null}
+          </div>
         </div>
-        <div className="box-text-area">
-          <label>Descrição</label>
-          <textarea
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-          />
+
+        <div className="box-inputs-row">
+          <div className="box-text-area">
+            <label>Descrição</label>
+            <textarea
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+            />
+          </div>
+          <div className="box-input">
+            {dataType !== "revenue" ? (
+              <>
+                <label>Parcelamento</label>
+                <select
+                  value={type}
+                  onChange={(event) => setType(event.target.value)}
+                >
+                  <option value="unique">Unico</option>
+                  <option value="parceled">Parcelado</option>
+                  <option value="continuous">Continuo</option>
+                </select>
+              </>
+            ) : null}
+            {type === "parceled" ? (
+              <>
+                <label>Parcelado</label>
+                <input
+                  type="number"
+                  value={parcels}
+                  onChange={(event) => setParcels(event.target.value)}
+                />
+              </>
+            ) : null}
+          </div>
         </div>
-        <div className="box-input">
-          <label>Valor</label>
-          <input
-            type="number"
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
-          />
-        </div>
-        {dataType === "expense" ? (
-          <>
+
+        <div className="box-inputs-row">
+          {dataType === "expense" ? (
+            <>
+              <div className="box-input">
+                <label>Data do pagamento</label>
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(event) => setDate(event.target.value)}
+                />
+              </div>
+              <div className="box-input">
+                <label>Categoria</label>
+                <select
+                  value={category}
+                  onChange={(event) => setCategory(event.target.value)}
+                >
+                  {expenseCategories.map((item) => (
+                    <option value={item}>{item}</option>
+                  ))}
+                </select>
+              </div>
+            </>
+          ) : dataType === "receipt" ? (
             <div className="box-input">
               <label>Data do pagamento</label>
               <input
@@ -117,37 +202,9 @@ export default function MenuAdd({ onAdd, setShow, show, dataType }) {
                 onChange={(event) => setDate(event.target.value)}
               />
             </div>
-            <div className="box-input">
-              <label>Categoria</label>
-              <select
-                value={category}
-                onChange={(event) => setCategory(event.target.value)}
-              >
-                {expenseCategories.map((item) => (
-                  <option value={item}>{item}</option>
-                ))}
-              </select>
-            </div>
-          </>
-        ) : dataType === "receipt" ? (
-          <div className="box-input">
-            <label>Data do pagamento</label>
-            <input
-              type="date"
-              value={date}
-              onChange={(event) => setDate(event.target.value)}
-            />
-          </div>
-        ) : (
-          <div className="box-color">
-            <label>Cor</label>
-            <input
-              type="color"
-              value={color}
-              onChange={(event) => setColor(event.target.value)}
-            />
-          </div>
-        )}
+          ) : null}
+        </div>
+
         <div className="box-button-add">
           <button className="button-secundary" onClick={add}>
             Adicionar

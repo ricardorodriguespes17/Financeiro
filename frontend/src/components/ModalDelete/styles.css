@@ -1,0 +1,49 @@
+.modal-delete {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #00a86b;
+}
+
+.modal-delete .body-modal {
+  background-color: var(--box-color);
+  width: 800px;
+  max-width: 100%;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #00a86b;
+  padding-bottom: 20px;
+  overflow: auto;
+}
+
+.modal-delete .box-label {
+  width: 100%;
+  height: 70px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 30px;
+  min-width: 390px;
+}
+
+.modal-delete .box-label label, .modal-delete .box-text-area label {
+  font-weight: bold;
+  margin-left: 0;
+  width: 150px;
+  color: #00a86b;
+}
+
+.box-actions {
+  width: 100%;
+  margin-top: 30px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.box-actions button {
+  width: 200px;
+}

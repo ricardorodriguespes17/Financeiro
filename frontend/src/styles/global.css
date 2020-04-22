@@ -7,12 +7,6 @@
   font-family: "Montserrat", sans-serif;
 }
 
-html {
-  --primary-color: #00a86b;
-  --secundary-color: #ffffff;
-  --tertiary-color: "#dae0da";
-}
-
 body {
   background-color: var(--primary-color);
 }
@@ -42,9 +36,20 @@ input {
   height: 50px;
   border: 1px solid var(--primary-color);
   border-radius: 5px;
-  background-color: "#FFF";
+  background-color: var(--input-edit-bg);
+  color: var(--input-edit-color);
   padding-left: 10px;
   font-size: medium;
+}
+
+textarea {
+  background-color: var(--input-edit-bg);
+  color: var(--input-edit-color);
+}
+
+select {
+  background-color: var(--input-edit-bg);
+  color: var(--input-edit-color);
 }
 
 button {
@@ -100,4 +105,92 @@ button:hover {
   border-radius: 5px;
   background: var(--primary-color);
   -webkit-box-shadow: inset 0 0 2px var(--secundary-color);
+}
+
+/* Content Style */
+
+.content {
+  width: 90%;
+  min-width: 300px;
+  height: 100%;
+  min-height: 450px;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  border-radius: 10px;
+  background-color: var(--tertiary-color);
+  color: #00a86b;
+  font-size: large;
+  padding: 10px;
+  overflow: auto;
+}
+
+.content form {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.content .grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 20px;
+  list-style: none;
+  margin-top: 20px;
+}
+
+.content .grid .title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.content .grid div {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.content .grid div label {
+  cursor: pointer;
+}
+
+.content .grid .grid-item {
+  height: 150px;
+  background-color: var(--box-color);
+  border-radius: 5px;
+  padding: 5px 20px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  font-size: medium;
+}
+
+.content .grid .grid-item .list {
+  list-style: none;
+}
+
+.content .grid .grid-item .box-button {
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.content .grid .grid-item .box-text {
+  width: 100%;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.content .action {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }

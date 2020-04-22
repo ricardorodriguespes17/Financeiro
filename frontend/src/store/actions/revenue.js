@@ -27,7 +27,11 @@ function deleteRevenue(revenue) {
 }
 
 function getRevenues() {
-  return async (dispatch) => {};
+  return async (dispatch) => {
+    const revenues = [];
+
+    loadRevenues(revenues);
+  };
 }
 
 function loadRevenues(revenues) {

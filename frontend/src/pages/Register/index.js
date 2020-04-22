@@ -2,7 +2,6 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 
 import "./styles.css";
-import Content from "../../components/Content";
 
 export default function Register() {
   const navigation = useHistory();
@@ -16,13 +15,13 @@ export default function Register() {
       <header>
         <label>Financeiro</label>
         <button
-          className="button-secondary"
+          className="button-secundary"
           onClick={() => navigation.push("login")}
         >
           Voltar ao login
         </button>
       </header>
-      <Content small>
+      <div className="register-body">
         <form>
           <label>Nome</label>
           <input type="label" />
@@ -36,7 +35,7 @@ export default function Register() {
             Entrar
           </button>
         </form>
-      </Content>
+      </div>
     </div>
   );
 }

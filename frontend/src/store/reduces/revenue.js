@@ -6,10 +6,10 @@ import {
 } from "../actions/types";
 
 const initialState = [
-  { id: "1", title: "Dinheiro", value: "15", color: "#008800" },
-  { id: "2", title: "Conta Nubank", value: "245", color: "#6655AA" },
-  { id: "3", title: "Conta Caixa", value: "0", color: "#000090" },
-  { id: "4", title: "Conta Neon", value: "0", color: "#55FFFF" },
+  { id: "1", title: "Dinheiro", value: "15" },
+  { id: "2", title: "Conta Nubank", value: "245" },
+  { id: "3", title: "Conta Caixa", value: "0" },
+  { id: "4", title: "Conta Neon", value: "0" },
 ];
 
 export default function reduce(state = initialState, action) {
