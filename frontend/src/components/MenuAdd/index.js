@@ -13,7 +13,6 @@ export default function MenuAdd({ onAdd, setShow, show, dataType }) {
   const [date, setDate] = useState("");
   const [parcels, setParcels] = useState(0);
   const [type, setType] = useState("unique");
-  const [paid, setPaid] = useState(false);
 
   const expenseCategories = [
     "Outros",
@@ -54,7 +53,7 @@ export default function MenuAdd({ onAdd, setShow, show, dataType }) {
         value: parcels > 0 ? value / parcels : value,
         category,
         date: formatedDate,
-        paid,
+        paid: [],
         type,
         parcels,
       };
@@ -64,7 +63,7 @@ export default function MenuAdd({ onAdd, setShow, show, dataType }) {
         description,
         value,
         date: formatedDate,
-        paid,
+        paid: [],
         type,
         parcels,
       };
@@ -94,7 +93,6 @@ export default function MenuAdd({ onAdd, setShow, show, dataType }) {
     setCategory("Outros");
     setType("unique");
     setParcels(0);
-    setPaid(false);
   }
 
   return (
@@ -120,18 +118,6 @@ export default function MenuAdd({ onAdd, setShow, show, dataType }) {
               value={value}
               onChange={(event) => setValue(event.target.value)}
             />
-            {dataType !== "revenue" ? (
-              <>
-                {" "}
-                <label>Pago</label>
-                <input
-                  className="checkbox"
-                  type="checkbox"
-                  value={paid}
-                  onChange={(event) => setPaid(event.target.value)}
-                />{" "}
-              </>
-            ) : null}
           </div>
         </div>
 

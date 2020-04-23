@@ -1,12 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
+
+import { useDispatch } from "react-redux";
+import allActions from "../../store/actions";
 
 import "./styles.css";
 
 export default function Login() {
   const navigation = useHistory();
 
-  function onLogin() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const dispatch = useDispatch();
+
+  function onLogin(event) {
+    event.preventDefault();
+
+    const data = { name: "Ricardo Rodrigues", email };
+
+    dispatch(allActions.user.login(data));
+
     navigation.push("dashboard");
   }
 
@@ -22,9 +36,17 @@ export default function Login() {
       <div className="login-body">
         <form>
           <label>Email</label>
-          <input type="email" />
+          <input
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
           <label>Senha</label>
-          <input type="password" />
+          <input
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+          />
           <button type="submit" className="button-primary" onClick={onLogin}>
             Entrar
           </button>

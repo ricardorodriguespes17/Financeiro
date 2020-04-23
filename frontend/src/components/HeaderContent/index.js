@@ -64,6 +64,24 @@ export default function HeaderContent({ month, year }) {
     yearSelected = parseInt(yearSelected);
 
     var newArray = array.map((item) => {
+      if (
+        item.paid &&
+        item.paid
+          .map((item) => {
+            if (
+              item.split("-")[1] === String(parseInt(month) + 1) &&
+              item.split("-")[0] === String(year)
+            ) {
+              return item;
+            } else {
+              return null;
+            }
+          })
+          .filter((item) => item).length > 0
+      ) {
+        return null;
+      }
+
       var parcels = item.parcels ? item.parcels - 1 : 0;
 
       var itemMonth;
@@ -77,10 +95,15 @@ export default function HeaderContent({ month, year }) {
         itemYear = new Date().getFullYear();
       }
 
+      //Calcular a diferenca entre o mes sendo mostrado e o mes do item
+      var diferenceMonth = monthSelected - itemMonth;
+      var diferenceYear = yearSelected - itemYear;
+      var diference = diferenceMonth + diferenceYear * 12;
+
       while (parcels >= 0) {
         if (
           (itemMonth === monthSelected && itemYear === yearSelected) ||
-          item.type === "continuous"
+          (item.type === "continuous" && diference >= 0)
         )
           return item;
 

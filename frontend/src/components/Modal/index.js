@@ -11,6 +11,8 @@ export default function ModalCenter({
   item,
   show,
   setShow,
+  month,
+  year,
   dataType,
   onSetItem,
 }) {
@@ -21,6 +23,7 @@ export default function ModalCenter({
   const [category, setCategory] = useState("");
   const [date, setDate] = useState("");
   const [paid, setPaid] = useState(false);
+  const [arrayPaid, setArrayPaid] = useState([]);
   const [type, setType] = useState("unique");
   const [parcels, setParcels] = useState(0);
 
@@ -46,9 +49,31 @@ export default function ModalCenter({
     setValue(item.value);
     setCategory(item.category ? item.category : "Outros");
     setDate(item.date ? item.date : new Date().toISOString().split("T")[0]);
-    setPaid(item.paid);
+    setPaid(itemPaid(item.paid));
+    setArrayPaid(item.paid);
     setType(item.type);
     setParcels(item.parcels);
+  }
+
+  function itemPaid(paid) {
+    if (!month || !year || !paid) {
+      return false;
+    }
+
+    var paidMap = paid
+      .map((item) => {
+        if (
+          item.split("-")[1] === String(parseInt(month) + 1) &&
+          item.split("-")[0] === String(year)
+        ) {
+          return item;
+        } else {
+          return null;
+        }
+      })
+      .filter((item) => item);
+
+    return paidMap.length > 0;
   }
 
   function add() {
@@ -80,7 +105,11 @@ export default function ModalCenter({
         description,
         value: formatedValue,
         category,
-        paid,
+        paid: paid
+          ? arrayPaid.concat(`${year}-${parseInt(month) + 1}`)
+          : arrayPaid.filter(
+              (item) => item !== `${year}-${parseInt(month) + 1}`
+            ),
         type,
         parcels,
         date:
@@ -94,7 +123,11 @@ export default function ModalCenter({
         title,
         description,
         value: formatedValue,
-        paid,
+        paid: paid
+          ? arrayPaid.concat(`${year}-${parseInt(month) + 1}`)
+          : arrayPaid.filter(
+              (item) => item !== `${year}-${parseInt(month) + 1}`
+            ),
         type,
         parcels,
         date:
@@ -153,8 +186,8 @@ export default function ModalCenter({
               <input
                 className="checkbox"
                 type="checkbox"
-                value={paid}
-                onChange={(event) => setPaid(event.target.value)}
+                checked={paid}
+                onChange={(event) => setPaid(!paid)}
               />
             </div>
           ) : null}

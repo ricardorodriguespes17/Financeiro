@@ -79,7 +79,11 @@ export default function Wallet() {
         <button className="button-icon" onClick={() => setShowDrawer(true)}>
           <MenuIcon size={28} />
         </button>
-        {`${monthsString[new Date().getMonth()]} / ${new Date().getFullYear()}`}
+        <input
+          value={`${
+            monthsString[new Date().getMonth()]
+          } / ${new Date().getFullYear()}`}
+        />
         <button className="button-secundary" onClick={logout}>
           Sair
         </button>

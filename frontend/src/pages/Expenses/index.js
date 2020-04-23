@@ -81,12 +81,15 @@ export default function Expenses() {
       var itemMonth = parseInt(item.date.split("-")[1]) + parcels;
       var itemYear = parseInt(item.date.split("-")[0]);
 
+      //Calcular a diferenca entre o mes sendo mostrado e o mes do item
+      var diferenceMonth = monthSelected - itemMonth;
+      var diferenceYear = yearSelected - itemYear;
+      var diference = diferenceMonth + diferenceYear * 12;
+
       while (parcels >= 0) {
         if (
           (itemMonth === monthSelected && itemYear === yearSelected) ||
-          (item.type === "continuous" &&
-            itemMonth <= monthSelected &&
-            itemYear <= yearSelected)
+          (item.type === "continuous" && diference >= 0)
         )
           return item;
 
@@ -124,8 +127,16 @@ export default function Expenses() {
   }
 
   function changeMonth(change) {
-    var newMonth = parseInt(month) + change;
-    var newYear = parseInt(year);
+    var newMonth;
+    var newYear;
+
+    if (change.split) {
+      newMonth = parseInt(change.split("-")[1]);
+      newYear = parseInt(change.split("-")[0]);
+    } else {
+      newMonth = parseInt(month) + change;
+      newYear = parseInt(year);
+    }
 
     if (newMonth === -1) {
       newMonth = 11;
@@ -146,7 +157,25 @@ export default function Expenses() {
     setYear(date.getFullYear());
   }
 
+  function itemPaid(paid) {
+    var paidMap = paid
+      .map((item) => {
+        if (
+          item.split("-")[1] === String(parseInt(month) + 1) &&
+          item.split("-")[0] === String(year)
+        ) {
+          return item;
+        } else {
+          return null;
+        }
+      })
+      .filter((item) => item);
+
+    return paidMap.length > 0;
+  }
+
   function logout() {
+    dispatch(allActions.user.logout());
     navigation.push("login");
   }
 
@@ -159,6 +188,8 @@ export default function Expenses() {
         setShow={setShowModal}
         dataType="expense"
         onSetItem={setExpense}
+        month={month}
+        year={year}
       />
       <MenuAdd
         onAdd={addExpense}
@@ -183,7 +214,11 @@ export default function Expenses() {
         <button className="button-icon" onClick={() => changeMonth(-1)}>
           <LeftIcon size={36} />
         </button>
-        {month !== "" ? `${monthsString[month]} / ${year}` : "---- / ----"}
+        <input
+          value={
+            month !== "" ? `${monthsString[month]} / ${year}` : "---- / ----"
+          }
+        />
         <button className="button-icon" onClick={() => changeMonth(1)}>
           <RightIcon size={36} />
         </button>
@@ -206,7 +241,10 @@ export default function Expenses() {
                 </button>
               </div>
               <div className="box-text">
-                <label className="title" onClick={() => showExpenses(item)}>
+                <label
+                  className={itemPaid(item.paid) ? "title-paid" : "title"}
+                  onClick={() => showExpenses(item)}
+                >
                   {item.title}
                 </label>
                 <label onClick={() => showExpenses(item)}>

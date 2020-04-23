@@ -14,6 +14,7 @@ const initialState = [
     description: "",
     date: "2020-04-25",
     type: "unique",
+    paid: ["2020-4"],
   },
 ];
 

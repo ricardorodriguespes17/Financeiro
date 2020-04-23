@@ -16,7 +16,7 @@ const initialState = [
     date: "2020-05-01",
     type: "parceled",
     parcels: 1,
-    paid: false,
+    paid: [],
   },
   {
     id: "2",
@@ -26,7 +26,7 @@ const initialState = [
     category: "Alimentação",
     date: "2020-04-30",
     type: "continuous",
-    paid: false,
+    paid: [],
   },
   {
     id: "3",
@@ -36,7 +36,7 @@ const initialState = [
     category: "Casa",
     date: "2020-04-19",
     type: "unique",
-    paid: true,
+    paid: [],
   },
 ];
 

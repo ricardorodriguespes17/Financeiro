@@ -96,10 +96,15 @@ export default function Receipts() {
       var itemMonth = parseInt(item.date.split("-")[1]) + parcels;
       var itemYear = parseInt(item.date.split("-")[0]);
 
+      //Calcular a diferenca entre o mes sendo mostrado e o mes do item
+      var diferenceMonth = monthSelected - itemMonth;
+      var diferenceYear = yearSelected - itemYear;
+      var diference = diferenceMonth + diferenceYear * 12;
+
       while (parcels >= 0) {
         if (
           (itemMonth === monthSelected && itemYear === yearSelected) ||
-          item.type === "continuous"
+          (item.type === "continuous" && diference >= 0)
         )
           return item;
 
@@ -148,6 +153,23 @@ export default function Receipts() {
     navigation.push(navigation.location.pathname);
   }
 
+  function itemPaid(paid) {
+    var paidMap = paid
+      .map((item) => {
+        if (
+          item.split("-")[1] === String(parseInt(month) + 1) &&
+          item.split("-")[0] === String(year)
+        ) {
+          return item;
+        } else {
+          return null;
+        }
+      })
+      .filter((item) => item);
+
+    return paidMap.length > 0;
+  }
+
   function logout() {
     navigation.push("login");
   }
@@ -161,6 +183,8 @@ export default function Receipts() {
         setShow={setShowModal}
         dataType="receipt"
         onSetItem={setReceipt}
+        month={month}
+        year={year}
       />
       <MenuAdd
         onAdd={addReceipt}
@@ -185,7 +209,11 @@ export default function Receipts() {
         <button className="button-icon" onClick={() => changeMonth(-1)}>
           <LeftIcon size={36} />
         </button>
-        {month !== "" ? `${monthsString[month]} / ${year}` : "---- / ----"}
+        <input
+          value={
+            month !== "" ? `${monthsString[month]} / ${year}` : "---- / ----"
+          }
+        />
         <button className="button-icon" onClick={() => changeMonth(1)}>
           <RightIcon size={36} />
         </button>
@@ -208,7 +236,10 @@ export default function Receipts() {
                 </button>
               </div>
               <div className="box-text">
-                <label className="title" onClick={() => showReceipt(item)}>
+                <label
+                  className={itemPaid(item.paid) ? "title-paid" : "title"}
+                  onClick={() => showReceipt(item)}
+                >
                   {item.title}
                 </label>
                 <label onClick={() => showReceipt(item)}>

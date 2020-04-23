@@ -1,3 +1,6 @@
+export const LOGIN = "LOGIN";
+export const LOGOUT = "LOGOUT";
+
 export const LOAD_EXPENSES = "LOAD_EXPENSES";
 export const ADD_EXPENSE = "ADD_EXPENSE";
 export const SET_EXPENSE = "SET_EXPENSE";
