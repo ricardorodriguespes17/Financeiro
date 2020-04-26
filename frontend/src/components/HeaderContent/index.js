@@ -16,19 +16,28 @@ import {
 import "./styles.css";
 
 import { useSelector } from "react-redux";
+import { useFirestoreConnect } from "react-redux-firebase";
 
 export default function HeaderContent({ month, year }) {
   const navigation = useHistory();
   const location = navigation.location.pathname.split("/")[1];
 
+  const user = useSelector((state) => state.firebase.auth);
+
+  useFirestoreConnect(() => [
+    { collection: "expenses" },
+    { collection: "receipts" },
+    { collection: "revenues" },
+  ]);
+
   const revenuesTotal = useSelector((state) =>
-    state.revenues.length > 0 ? mapMonthValues(state.revenues) : 0
+    mapMonthValues(state.firestore.data.revenues)
   );
   const receiptsTotal = useSelector((state) =>
-    state.receipts.length > 0 ? mapMonthValues(state.receipts) : 0
+    mapMonthValues(state.firestore.data.receipts)
   );
   const expensesTotal = useSelector((state) =>
-    state.expenses.length > 0 ? mapMonthValues(state.expenses) : 0
+    mapMonthValues(state.firestore.data.expenses)
   );
   const profitValue =
     parseFloat(revenuesTotal) +
@@ -56,14 +65,24 @@ export default function HeaderContent({ month, year }) {
     localStorage.setItem("visibility", visibility);
   }
 
-  function mapMonthValues(array) {
+  function mapMonthValues(data) {
+    if (!data || data === {}) {
+      return 0;
+    }
+
     var monthSelected = month ? month : new Date().getMonth();
     var yearSelected = year ? year : new Date().getFullYear();
 
     monthSelected = parseInt(monthSelected) + 1;
     yearSelected = parseInt(yearSelected);
 
-    var newArray = array.map((item) => {
+    var newArray = Object.keys(data).map((id) => {
+      var item = { ...data[id], id };
+
+      if (item.uid !== user.uid) {
+        return null;
+      }
+
       if (
         item.paid &&
         item.paid

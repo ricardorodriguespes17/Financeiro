@@ -5,12 +5,7 @@ import {
   SET_REVENUE,
 } from "../actions/types";
 
-const initialState = [
-  { id: "1", title: "Dinheiro", value: "15" },
-  { id: "2", title: "Conta Nubank", value: "245" },
-  { id: "3", title: "Conta Caixa", value: "0" },
-  { id: "4", title: "Conta Neon", value: "0" },
-];
+const initialState = [];
 
 export default function reduce(state = initialState, action) {
   switch (action.type) {

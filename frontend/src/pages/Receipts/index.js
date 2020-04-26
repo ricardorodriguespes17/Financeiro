@@ -17,8 +17,18 @@ import allActions from "../../store/actions";
 import HeaderContent from "../../components/HeaderContent";
 import ModalDelete from "../../components/ModalDelete";
 
+import {
+  useFirestore,
+  useFirestoreConnect,
+  useFirebase,
+} from "react-redux-firebase";
+
 export default function Receipts() {
   const navigation = useHistory();
+
+  const firestore = useFirestore();
+
+  const firebase = useFirebase();
 
   const [showDrawer, setShowDrawer] = useState(false);
   const [itemSelected, setItemSelected] = useState({});
@@ -28,7 +38,13 @@ export default function Receipts() {
   const [month, setMonth] = useState(new Date().getMonth());
   const [year, setYear] = useState(new Date().getFullYear());
 
-  const receipts = useSelector((state) => mapMonthArray(state.receipts));
+  useFirestoreConnect(() => [{ collection: "receipts" }]);
+
+  const user = useSelector((state) => state.firebase.auth);
+
+  const receipts = useSelector((state) =>
+    mapMonthArray(state.firestore.data.receipts)
+  );
   const dispatch = useDispatch();
 
   const monthsString = [
@@ -69,29 +85,55 @@ export default function Receipts() {
   }
 
   function addReceipt(item) {
-    dispatch(allActions.receipt.addReceipt(item));
+    firestore
+      .collection("receipts")
+      .add({
+        ...item,
+        uid: user.uid,
+      })
+      .then((doc) => {
+        dispatch(
+          allActions.receipt.addReceipt({
+            ...item,
+            uid: user.uid,
+          })
+        );
+      })
+      .catch((error) => {
+        console.log("Error on add expense");
+      });
   }
 
   function deleteReceiptAll(item) {
-    dispatch(allActions.receipt.deleteReceiptAll(item));
+    // dispatch(allActions.receipt.deleteReceiptAll(item));
   }
 
   function deleteReceiptNext(item) {
-    dispatch(allActions.receipt.deleteReceiptNext(item));
+    // dispatch(allActions.receipt.deleteReceiptNext(item));
   }
 
   function setReceipt(item) {
-    dispatch(allActions.receipt.setReceipt(item));
+    // dispatch(allActions.receipt.setReceipt(item));
   }
 
   function mapMonthArray(array) {
+    if (!array) {
+      return [];
+    }
+
     var monthSelected = month;
     var yearSelected = year;
 
     monthSelected = parseInt(monthSelected) + 1;
     yearSelected = parseInt(yearSelected);
 
-    var newArray = array.map((item) => {
+    var newArray = Object.keys(array).map((id) => {
+      var item = { ...array[id], id };
+
+      if (item.uid !== user.uid) {
+        return null;
+      }
+
       var parcels = item.parcels ? item.parcels - 1 : 0;
       var itemMonth = parseInt(item.date.split("-")[1]) + parcels;
       var itemYear = parseInt(item.date.split("-")[0]);
@@ -171,7 +213,16 @@ export default function Receipts() {
   }
 
   function logout() {
-    navigation.push("login");
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        dispatch(allActions.user.logout());
+        navigation.push("login");
+      })
+      .catch((error) => {
+        alert("Erro ao encerrar sessão");
+      });
   }
 
   return (
@@ -225,29 +276,31 @@ export default function Receipts() {
       <ul className="content">
         <HeaderContent month={month} year={year} />
         <ul className="grid">
-          {receipts.map((item) => (
-            <li key={item.id} className="grid-item">
-              <div className="box-button">
-                <button
-                  className="button-icon"
-                  onClick={() => confirmDeleteExpense(item)}
-                >
-                  <DeleteIcon size={24} color="#00a86b" />
-                </button>
-              </div>
-              <div className="box-text">
-                <label
-                  className={itemPaid(item.paid) ? "title-paid" : "title"}
-                  onClick={() => showReceipt(item)}
-                >
-                  {item.title}
-                </label>
-                <label onClick={() => showReceipt(item)}>
-                  {formatCurrency(item.value)}
-                </label>
-              </div>
-            </li>
-          ))}
+          {receipts
+            ? receipts.map((item) => (
+                <li key={item.id} className="grid-item">
+                  <div className="box-button">
+                    <button
+                      className="button-icon"
+                      onClick={() => confirmDeleteExpense(item)}
+                    >
+                      <DeleteIcon size={24} color="#00a86b" />
+                    </button>
+                  </div>
+                  <div className="box-text">
+                    <label
+                      className={itemPaid(item.paid) ? "title-paid" : "title"}
+                      onClick={() => showReceipt(item)}
+                    >
+                      {item.title}
+                    </label>
+                    <label onClick={() => showReceipt(item)}>
+                      {formatCurrency(item.value)}
+                    </label>
+                  </div>
+                </li>
+              ))
+            : null}
         </ul>
         <div className="action">
           <button

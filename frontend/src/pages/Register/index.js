@@ -3,13 +3,18 @@ import { useHistory } from "react-router-dom";
 
 import "./styles.css";
 
-export default function Register() {
-  const navigation = useHistory();
+import { useFirebase, useFirestore } from "react-redux-firebase";
 
+export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const navigation = useHistory();
+
+  const firebase = useFirebase();
+  const firestore = useFirestore();
 
   function onRegister(event) {
     event.preventDefault();
@@ -21,9 +26,29 @@ export default function Register() {
       confirmPassword,
     };
 
-    console.log(user);
+    firebase
+      .createUser({
+        email,
+        password,
+      })
+      .then((doc) => {
+        console.log(doc);
 
-    navigation.push("login");
+        firestore
+          .collection("users")
+          .add({ ...user, id: doc.user.uid })
+          .then(() => {
+            navigation.push("login");
+          })
+          .catch((error) => {
+            console.log("erro ao cadastrar usuario");
+          });
+      })
+      .catch((error) => {
+        console.log("erro ao criar usuario:" + error);
+      });
+
+    console.log(user);
   }
 
   return (

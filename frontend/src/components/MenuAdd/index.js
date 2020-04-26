@@ -96,7 +96,7 @@ export default function MenuAdd({ onAdd, setShow, show, dataType }) {
   }
 
   return (
-    <Modal open={show} className="menu">
+    <Modal open={show} className="menu" id="modal-add">
       <div className="body-menu">
         <div className="box-button-close">
           <button className="button-icon" onClick={closeMenu}>

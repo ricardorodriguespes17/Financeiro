@@ -6,47 +6,12 @@ import {
   SET_EXPENSE,
 } from "../actions/types";
 
-const initialState = [
-  {
-    id: "1",
-    title: "Exemplo parcelado",
-    value: "20",
-    description: "",
-    category: "Outros",
-    date: "2020-05-01",
-    type: "parceled",
-    parcels: 1,
-    paid: [],
-  },
-  {
-    id: "2",
-    title: "Exemplo Continuo",
-    value: "100",
-    description: "",
-    category: "Alimentação",
-    date: "2020-04-30",
-    type: "continuous",
-    paid: [],
-  },
-  {
-    id: "3",
-    title: "Exemplo Unico",
-    value: "8",
-    description: "",
-    category: "Casa",
-    date: "2020-04-19",
-    type: "unique",
-    paid: [],
-  },
-];
+const initialState = [];
 
 export default function reduce(state = initialState, action) {
   switch (action.type) {
     case ADD_EXPENSE:
-      return state.concat({
-        ...action.payload,
-        id: Math.floor(Math.random() * 10000).toString(),
-      });
+      return state.concat(action.payload);
     case LOAD_EXPENSES:
       return action.payload;
     case DELETE_EXPENSE_ALL:

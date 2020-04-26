@@ -27,9 +27,17 @@ export default function ModalDelete({
       var item = itemSelected;
       var itemMonth = item.date.split("-")[1] - 1;
       var itemYear = item.date.split("-")[0];
+      var month;
+      var year;
 
-      var diferenceMonth = currentMonth - itemMonth;
-      var diferenceYear = (currentYear - itemYear) * 12;
+      if (currentMonth) month = currentMonth;
+      else month = new Date().getMonth();
+
+      if (currentYear) year = currentYear;
+      else year = new Date().getFullYear();
+
+      var diferenceMonth = month - itemMonth;
+      var diferenceYear = (year - itemYear) * 12;
 
       var diference = diferenceMonth + diferenceYear;
 
@@ -49,7 +57,7 @@ export default function ModalDelete({
   }
 
   return (
-    <Modal open={show} className="modal-delete">
+    <Modal open={show} className="modal-delete" id="modal-delete">
       <div className="body-modal">
         <div className="box-label">
           <label>Exclusão</label>

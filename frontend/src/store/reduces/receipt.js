@@ -6,17 +6,7 @@ import {
   SET_RECEIPT,
 } from "../actions/types";
 
-const initialState = [
-  {
-    id: "1",
-    title: "Exemplo unico",
-    value: "80",
-    description: "",
-    date: "2020-04-25",
-    type: "unique",
-    paid: ["2020-4"],
-  },
-];
+const initialState = [];
 
 export default function reduce(state = initialState, action) {
   switch (action.type) {

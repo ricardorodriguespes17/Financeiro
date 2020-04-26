@@ -6,11 +6,16 @@ import allActions from "../../store/actions";
 
 import "./styles.css";
 
+import { useFirebase } from "react-redux-firebase";
+
 export default function Login() {
   const navigation = useHistory();
 
+  const firebase = useFirebase();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [labelError, setLabelError] = useState("");
 
   const dispatch = useDispatch();
 
@@ -19,9 +24,31 @@ export default function Login() {
 
     const data = { name: "Ricardo Rodrigues", email };
 
-    dispatch(allActions.user.login(data));
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then((doc) => {
+        var user = { ...data, id: doc.user.uid };
+        dispatch(allActions.user.login(user));
+        navigation.push("dashboard");
+      })
+      .catch((error) => {
+        switch (error.code) {
+          case "auth/invalid-email":
+            setLabelError("Email inválido");
+            break;
+          case "auth/user-not-found":
+            setLabelError("Usuário não encontrado");
+            break;
+          case "auth/wrong-password":
+            setLabelError("Senha incorreta");
+            break;
+          default:
+            setLabelError("Erro inesperado!");
+        }
 
-    navigation.push("dashboard");
+        setTimeout(() => setLabelError(""), 2500);
+      });
   }
 
   function register() {
@@ -35,6 +62,9 @@ export default function Login() {
       </header>
       <div className="login-body">
         <form>
+          {labelError !== "" ? (
+            <label className="label-error">{labelError}</label>
+          ) : null}
           <label>Email</label>
           <input
             type="email"

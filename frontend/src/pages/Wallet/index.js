@@ -12,15 +12,31 @@ import { useSelector, useDispatch } from "react-redux";
 import allActions from "../../store/actions";
 import HeaderContent from "../../components/HeaderContent";
 
-export default function Wallet() {
-  const navigation = useHistory();
+import {
+  useFirestore,
+  useFirestoreConnect,
+  useFirebase,
+} from "react-redux-firebase";
+import ModalDelete from "../../components/ModalDelete";
 
+export default function Wallet() {
   const [itemSelected, setItemSelected] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [showMenuAdd, setShowMenuAdd] = useState(false);
+  const [showModalDelete, setShowModalDelete] = useState(false);
 
-  const walletItems = useSelector((state) => state.revenues);
+  const navigation = useHistory();
+
+  const user = useSelector((state) => state.firebase.auth);
+
+  const firestore = useFirestore();
+  const firebase = useFirebase();
+  useFirestoreConnect(() => [{ collection: "revenues" }]);
+
+  const walletItems = useSelector((state) =>
+    mapArray(state.firestore.data.revenues)
+  );
   const dispatch = useDispatch();
 
   const monthsString = [
@@ -43,20 +59,58 @@ export default function Wallet() {
     setShowModal(true);
   }
 
+  function mapArray(data) {
+    if (!data) return [];
+
+    var newData = Object.keys(data).map((id) => {
+      var item = { ...data[id], id };
+
+      if (item.uid === user.uid) {
+        return item;
+      }
+
+      return null;
+    });
+
+    return newData.filter((item) => item);
+  }
+
   function addRevenue(item) {
-    dispatch(allActions.revenue.addRevenue(item));
+    firestore
+      .collection("revenues")
+      .add({ ...item, uid: user.uid })
+      .then((doc) => {
+        dispatch(allActions.revenue.addRevenue({ ...item, uid: user.uid }));
+      })
+      .catch((error) => {
+        console.log("Error on add expense");
+      });
+  }
+
+  function confirmDeleteRevenue(item) {
+    setItemSelected(item);
+    setShowModalDelete(true);
   }
 
   function deleteRevenue(item) {
-    dispatch(allActions.revenue.deleteRevenue(item));
+    // dispatch(allActions.revenue.deleteRevenue(item));
   }
 
   function setRevenue(item) {
-    dispatch(allActions.revenue.setRevenue(item));
+    // dispatch(allActions.revenue.setRevenue(item));
   }
 
   function logout() {
-    navigation.push("login");
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        dispatch(allActions.user.logout());
+        navigation.push("login");
+      })
+      .catch((error) => {
+        alert("Erro ao encerrar sessão");
+      });
   }
 
   return (
@@ -75,6 +129,13 @@ export default function Wallet() {
         show={showMenuAdd}
         dataType="revenue"
       />
+      <ModalDelete
+        item={itemSelected}
+        setShow={setShowModalDelete}
+        show={showModalDelete}
+        onDeleteAll={deleteRevenue}
+        onDeleteNext={deleteRevenue}
+      />
       <header>
         <button className="button-icon" onClick={() => setShowDrawer(true)}>
           <MenuIcon size={28} />
@@ -92,26 +153,28 @@ export default function Wallet() {
       <ul className="content">
         <HeaderContent />
         <ul className="grid">
-          {walletItems.map((item) => (
-            <li key={item.id} className="grid-item">
-              <div className="box-button">
-                <button
-                  className="button-icon"
-                  onClick={() => deleteRevenue(item)}
-                >
-                  <DeleteIcon size={24} color="#00a86b" />
-                </button>
-              </div>
-              <div className="box-text">
-                <label className="title" onClick={() => showRevenue(item)}>
-                  {item.title}
-                </label>
-                <label onClick={() => showRevenue(item)}>
-                  {formatCurrency(item.value)}
-                </label>
-              </div>
-            </li>
-          ))}
+          {walletItems
+            ? walletItems.map((item) => (
+                <li key={item.id} className="grid-item">
+                  <div className="box-button">
+                    <button
+                      className="button-icon"
+                      onClick={() => confirmDeleteRevenue(item)}
+                    >
+                      <DeleteIcon size={24} color="#00a86b" />
+                    </button>
+                  </div>
+                  <div className="box-text">
+                    <label className="title" onClick={() => showRevenue(item)}>
+                      {item.title}
+                    </label>
+                    <label onClick={() => showRevenue(item)}>
+                      {formatCurrency(item.value)}
+                    </label>
+                  </div>
+                </li>
+              ))
+            : null}
         </ul>
         <div className="action">
           <button

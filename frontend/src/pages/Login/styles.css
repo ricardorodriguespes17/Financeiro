@@ -31,3 +31,15 @@
 .login-body form button {
   margin-top: 20px;
 }
+
+.label-error {
+  width: 80%;
+  padding: 15px;
+  font-size: medium;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: center;
+  background-color: #55EE55BB;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}

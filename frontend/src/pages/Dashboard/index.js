@@ -11,13 +11,19 @@ import {
   MdMenu as MenuIcon,
 } from "react-icons/md";
 
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import allActions from "../../store/actions";
 
 import "./styles.css";
 import HeaderContent from "../../components/HeaderContent";
+import { useFirebase } from "react-redux-firebase";
 
 export default function Dashboard() {
   const navigation = useHistory();
+
+  const firebase = useFirebase();
+
+  const dispatch = useDispatch();
 
   const [showDrawer, setShowDrawer] = useState(false);
 
@@ -34,8 +40,10 @@ export default function Dashboard() {
     Viagem: { value: 0 },
   };
 
+  const user = useSelector((state) => state.firebase.auth);
+
   useSelector((state) =>
-    mapMonthArray(state.expenses).map((item) => {
+    mapMonthArray(state.firestore.data.expenses).map((item) => {
       expensesByCategory[item.category].value += parseInt(item.value);
       return item;
     })
@@ -54,13 +62,23 @@ export default function Dashboard() {
   );
 
   function mapMonthArray(array) {
+    if (!array) {
+      return [];
+    }
+
     var monthSelected = new Date().getMonth();
     var yearSelected = new Date().getFullYear();
 
     monthSelected = parseInt(monthSelected) + 1;
     yearSelected = parseInt(yearSelected);
 
-    var newArray = array.map((item) => {
+    var newArray = Object.keys(array).map((id) => {
+      var item = { ...array[id], id };
+
+      if (item.uid !== user.uid) {
+        return null;
+      }
+
       var parcels = item.parcels ? item.parcels - 1 : 0;
       var itemMonth = parseInt(item.date.split("-")[1]) + parcels;
       var itemYear = parseInt(item.date.split("-")[0]);
@@ -90,7 +108,16 @@ export default function Dashboard() {
   }
 
   function logout() {
-    navigation.push("login");
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        dispatch(allActions.user.logout());
+        navigation.push("login");
+      })
+      .catch((error) => {
+        alert("Erro ao encerrar sessão");
+      });
   }
 
   return (

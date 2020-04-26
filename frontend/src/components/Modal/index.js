@@ -149,7 +149,7 @@ export default function ModalCenter({
   }
 
   return (
-    <Modal open={show} className="modal">
+    <Modal open={show} className="modal" id="modal-edit">
       <div className="body-modal">
         <div className="box-button">
           <button className="button-icon" onClick={() => setShow(false)}>

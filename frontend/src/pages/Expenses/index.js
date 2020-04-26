@@ -18,9 +18,13 @@ import allActions from "../../store/actions";
 import HeaderContent from "../../components/HeaderContent";
 import ModalDelete from "../../components/ModalDelete";
 
-export default function Expenses() {
-  const navigation = useHistory();
+import {
+  useFirestore,
+  useFirestoreConnect,
+  useFirebase,
+} from "react-redux-firebase";
 
+export default function Expenses() {
   const [showDrawer, setShowDrawer] = useState(false);
   const [itemSelected, setItemSelected] = useState({});
   const [showModal, setShowModal] = useState(false);
@@ -29,8 +33,20 @@ export default function Expenses() {
   const [month, setMonth] = useState(new Date().getMonth());
   const [year, setYear] = useState(new Date().getFullYear());
 
-  const expenses = useSelector((state) => mapMonthArray(state.expenses));
+  const navigation = useHistory();
+
   const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.firebase.auth);
+
+  const firebase = useFirebase();
+
+  const firestore = useFirestore();
+  useFirestoreConnect(() => [{ collection: "expenses" }]);
+
+  const expenses = useSelector((state) =>
+    mapMonthArray(state.firestore.data.expenses)
+  );
 
   const monthsString = [
     "Janeiro",
@@ -70,13 +86,23 @@ export default function Expenses() {
   }
 
   function mapMonthArray(array) {
+    if (!array) {
+      return;
+    }
+
     var monthSelected = month;
     var yearSelected = year;
 
     monthSelected = parseInt(monthSelected) + 1;
     yearSelected = parseInt(yearSelected);
 
-    var newArray = array.map((item) => {
+    var newArray = Object.keys(array).map((id) => {
+      var item = { ...array[id], id };
+
+      if (item.uid !== user.uid) {
+        return null;
+      }
+
       var parcels = item.parcels ? item.parcels - 1 : 0;
       var itemMonth = parseInt(item.date.split("-")[1]) + parcels;
       var itemYear = parseInt(item.date.split("-")[0]);
@@ -111,19 +137,36 @@ export default function Expenses() {
   }
 
   function addExpense(item) {
-    dispatch(allActions.expense.addExpense(item));
+    firestore
+      .collection("expenses")
+      .add({
+        ...item,
+        uid: user.uid,
+      })
+      .then((doc) => {
+        dispatch(
+          allActions.expense.addExpense({
+            ...item,
+            uid: user.uid,
+          })
+        );
+      })
+      .catch((error) => {
+        console.log("Error on add expense");
+      });
   }
 
   function deleteExpenseAll(item) {
-    dispatch(allActions.expense.deleteExpenseAll(item));
+    // firestore.collection("expenses")
+    // dispatch(allActions.expense.deleteExpenseAll(item));
   }
 
   function deleteExpenseNext(item) {
-    dispatch(allActions.expense.deleteExpenseNext(item));
+    // dispatch(allActions.expense.deleteExpenseNext(item));
   }
 
   function setExpense(item) {
-    dispatch(allActions.expense.setExpense(item));
+    // dispatch(allActions.expense.setExpense(item));
   }
 
   function changeMonth(change) {
@@ -175,8 +218,16 @@ export default function Expenses() {
   }
 
   function logout() {
-    dispatch(allActions.user.logout());
-    navigation.push("login");
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        dispatch(allActions.user.logout());
+        navigation.push("login");
+      })
+      .catch((error) => {
+        alert("Erro ao encerrar sessão");
+      });
   }
 
   return (
@@ -230,29 +281,31 @@ export default function Expenses() {
       <ul className="content">
         <HeaderContent month={month} year={year} />
         <ul className="grid">
-          {expenses.map((item) => (
-            <li key={item.id} className="grid-item">
-              <div className="box-button">
-                <button
-                  className="button-icon"
-                  onClick={() => confirmDeleteExpense(item)}
-                >
-                  <DeleteIcon size={24} color="#00a86b" />
-                </button>
-              </div>
-              <div className="box-text">
-                <label
-                  className={itemPaid(item.paid) ? "title-paid" : "title"}
-                  onClick={() => showExpenses(item)}
-                >
-                  {item.title}
-                </label>
-                <label onClick={() => showExpenses(item)}>
-                  {formatCurrency(item.value)}
-                </label>
-              </div>
-            </li>
-          ))}
+          {expenses
+            ? expenses.map((item) => (
+                <li key={item.id} className="grid-item">
+                  <div className="box-button">
+                    <button
+                      className="button-icon"
+                      onClick={() => confirmDeleteExpense(item)}
+                    >
+                      <DeleteIcon size={24} color="#00a86b" />
+                    </button>
+                  </div>
+                  <div className="box-text">
+                    <label
+                      className={itemPaid(item.paid) ? "title-paid" : "title"}
+                      onClick={() => showExpenses(item)}
+                    >
+                      {item.title}
+                    </label>
+                    <label onClick={() => showExpenses(item)}>
+                      {formatCurrency(item.value)}
+                    </label>
+                  </div>
+                </li>
+              ))
+            : null}
         </ul>
         <div className="action">
           <button
