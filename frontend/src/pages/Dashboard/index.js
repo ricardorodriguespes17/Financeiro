@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import Drawer from "../../components/Drawer";
 import { Pie } from "react-chartjs-2";
 
 import formatCurrency from "../../utils/formatCurrency";
-import formatDate from "../../utils/formatDate";
 
 import {
   MdArrowForward as ArrowRightIcon,
@@ -50,27 +49,57 @@ export default function Dashboard() {
   );
 
   const expensesToday = useSelector((state) =>
-    state.expenses.filter((item) =>
-      new Date().toISOString().includes(item.date)
-    )
+    mapTodayArray(state.firestore.data.expenses)
   );
 
   const receiptToday = useSelector((state) =>
-    state.receipts.filter((item) =>
-      new Date().toISOString().includes(item.date)
-    )
+    mapTodayArray(state.firestore.data.receipts)
   );
+
+  useEffect(() => {
+    localStorage.removeItem("month");
+    localStorage.removeItem("year");
+  }, []);
+
+  function mapTodayArray(array) {
+    if (!array) {
+      return [];
+    }
+
+    var currentDate = new Date();
+
+    var newArray = Object.keys(array).map((id) => {
+      var item = { ...array[id], id };
+
+      if (item.uid !== user.uid) {
+        return null;
+      }
+
+      if (
+        currentDate.getDate() === item.date.toDate().getDate() &&
+        currentDate.getMonth() === item.date.toDate().getMonth() &&
+        currentDate.getFullYear() === item.date.toDate().getFullYear()
+      ) {
+        return item;
+      } else {
+        return null;
+      }
+    });
+
+    newArray = newArray.filter((item) => item);
+
+    return newArray;
+  }
 
   function mapMonthArray(array) {
     if (!array) {
       return [];
     }
 
-    var monthSelected = new Date().getMonth();
-    var yearSelected = new Date().getFullYear();
-
-    monthSelected = parseInt(monthSelected) + 1;
-    yearSelected = parseInt(yearSelected);
+    var dateSelected = new Date(
+      new Date().getFullYear(),
+      new Date().getMonth()
+    );
 
     var newArray = Object.keys(array).map((id) => {
       var item = { ...array[id], id };
@@ -80,23 +109,23 @@ export default function Dashboard() {
       }
 
       var parcels = item.parcels ? item.parcels - 1 : 0;
-      var itemMonth = parseInt(item.date.split("-")[1]) + parcels;
-      var itemYear = parseInt(item.date.split("-")[0]);
+
+      var dateItem = new Date(
+        item.date.toDate().getFullYear(),
+        item.date.toDate().getMonth() + parcels
+      );
 
       while (parcels >= 0) {
         if (
-          (itemMonth === monthSelected && itemYear === yearSelected) ||
-          item.type === "continuous"
+          (dateItem.getMonth() === dateSelected.getMonth() &&
+            dateItem.getFullYear() === dateSelected.getFullYear()) ||
+          (item.type === "continuous" && dateItem <= dateSelected)
         )
           return item;
 
-        itemMonth--;
-        parcels--;
+        dateItem = new Date(dateItem - 2592000000);
 
-        if (itemMonth > 11) {
-          itemMonth = 0;
-          itemYear++;
-        }
+        parcels--;
       }
 
       return null;
@@ -158,9 +187,7 @@ export default function Dashboard() {
           </li>
 
           <li className="grid-item-dashboard">
-            <label className="title">{`Dispesas de hoje - ${formatDate(
-              new Date()
-            )}`}</label>
+            <label className="title">Despesas de hoje</label>
             <ul className="list">
               {expensesToday.map((item) => (
                 <li>
@@ -181,7 +208,7 @@ export default function Dashboard() {
           </li>
 
           <li className="grid-item-dashboard">
-            <label className="title">Dispesas do mês por categoria</label>
+            <label className="title">Despesas do mês por categoria</label>
             <Pie
               data={{
                 labels: Object.keys(expensesByCategory).filter(

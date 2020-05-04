@@ -43,12 +43,18 @@ export default function ModalCenter({
   useEffect(loadItem, [item]);
 
   function loadItem() {
+    console.log(item);
+
     setId(item.id);
     setTitle(item.title);
     setDescription(item.description);
     setValue(item.value);
     setCategory(item.category ? item.category : "Outros");
-    setDate(item.date ? item.date : new Date().toISOString().split("T")[0]);
+    setDate(
+      item.date
+        ? item.date.toDate().toISOString().split("T")[0]
+        : new Date().toISOString().split("T")[0]
+    );
     setPaid(itemPaid(item.paid));
     setArrayPaid(item.paid);
     setType(item.type);
@@ -98,9 +104,15 @@ export default function ModalCenter({
 
     var item;
 
+    var dateArray = date.split("-");
+    var formatedDate = new Date(
+      dateArray[0],
+      parseInt(dateArray[1]) - 1,
+      dateArray[2]
+    );
+
     if (dataType === "expense") {
       item = {
-        id,
         title,
         description,
         value: formatedValue,
@@ -112,14 +124,10 @@ export default function ModalCenter({
             ),
         type,
         parcels,
-        date:
-          date === ""
-            ? new Date().toISOString().split("T")[0]
-            : new Date(date).toISOString().split("T")[0],
+        date: formatedDate,
       };
     } else if (dataType === "receipt") {
       item = {
-        id,
         title,
         description,
         value: formatedValue,
@@ -130,21 +138,17 @@ export default function ModalCenter({
             ),
         type,
         parcels,
-        date:
-          date === ""
-            ? new Date().toISOString().split("T")[0]
-            : new Date(date).toISOString().split("T")[0],
+        date: formatedDate,
       };
     } else {
       item = {
-        id,
         title,
         description,
         value: formatedValue,
       };
     }
 
-    onSetItem(item);
+    onSetItem(item, id);
     setShow(false);
   }
 

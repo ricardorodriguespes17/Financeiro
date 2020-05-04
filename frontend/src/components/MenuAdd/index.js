@@ -42,15 +42,19 @@ export default function MenuAdd({ onAdd, setShow, show, dataType }) {
 
     var item;
 
-    var formatedDate = (date === "" ? new Date() : new Date(date))
-      .toISOString()
-      .split("T")[0];
+    var dateArray = date.split("-");
+
+    var formatedDate = new Date(
+      dateArray[0],
+      parseInt(dateArray[1]) - 1,
+      dateArray[2]
+    );
 
     if (dataType === "expense") {
       item = {
         title,
         description,
-        value: parcels > 0 ? value / parcels : value,
+        value,
         category,
         date: formatedDate,
         paid: [],

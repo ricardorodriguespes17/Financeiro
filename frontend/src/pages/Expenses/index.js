@@ -90,11 +90,7 @@ export default function Expenses() {
       return;
     }
 
-    var monthSelected = month;
-    var yearSelected = year;
-
-    monthSelected = parseInt(monthSelected) + 1;
-    yearSelected = parseInt(yearSelected);
+    var dateSelected = new Date(year, month);
 
     var newArray = Object.keys(array).map((id) => {
       var item = { ...array[id], id };
@@ -104,36 +100,47 @@ export default function Expenses() {
       }
 
       var parcels = item.parcels ? item.parcels - 1 : 0;
-      var itemMonth = parseInt(item.date.split("-")[1]) + parcels;
-      var itemYear = parseInt(item.date.split("-")[0]);
 
-      //Calcular a diferenca entre o mes sendo mostrado e o mes do item
-      var diferenceMonth = monthSelected - itemMonth;
-      var diferenceYear = yearSelected - itemYear;
-      var diference = diferenceMonth + diferenceYear * 12;
+      var dateItem = new Date(
+        item.date.toDate().getFullYear(),
+        item.date.toDate().getMonth() + parcels
+      );
 
       while (parcels >= 0) {
         if (
-          (itemMonth === monthSelected && itemYear === yearSelected) ||
-          (item.type === "continuous" && diference >= 0)
+          (dateItem.getMonth() === dateSelected.getMonth() &&
+            dateItem.getFullYear() === dateSelected.getFullYear()) ||
+          (item.type === "continuous" && dateItem <= dateSelected)
         )
           return item;
 
-        itemMonth--;
-        parcels--;
+        dateItem = new Date(dateItem - 2592000000);
 
-        if (itemMonth > 11) {
-          itemMonth = 0;
-          itemYear++;
-        }
+        parcels--;
       }
 
       return null;
     });
 
+    //Filter for remove null items
     newArray = newArray.filter((item) => item);
 
+    //Sort array
+    newArray = sortArray(newArray);
+
     return newArray;
+  }
+
+  function sortArray(array) {
+    array.sort((itemA, itemB) => {
+      if (itemA.date > itemB.date) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
+
+    return array;
   }
 
   function addExpense(item) {
@@ -144,12 +151,7 @@ export default function Expenses() {
         uid: user.uid,
       })
       .then((doc) => {
-        dispatch(
-          allActions.expense.addExpense({
-            ...item,
-            uid: user.uid,
-          })
-        );
+        dispatch(allActions.expense.addExpense(doc));
       })
       .catch((error) => {
         console.log("Error on add expense");
@@ -157,16 +159,15 @@ export default function Expenses() {
   }
 
   function deleteExpenseAll(item) {
-    // firestore.collection("expenses")
-    // dispatch(allActions.expense.deleteExpenseAll(item));
+    firestore.collection("expenses").doc(item.id).delete();
   }
 
-  function deleteExpenseNext(item) {
-    // dispatch(allActions.expense.deleteExpenseNext(item));
+  function deleteExpenseNext(item, id) {
+    firestore.collection("expenses").doc(id).update(item);
   }
 
-  function setExpense(item) {
-    // dispatch(allActions.expense.setExpense(item));
+  function setExpense(item, id) {
+    firestore.collection("expenses").doc(id).update(item);
   }
 
   function changeMonth(change) {
@@ -230,6 +231,32 @@ export default function Expenses() {
       });
   }
 
+  function renderItem(item) {
+    return (
+      <li key={item.id} className="grid-item">
+        <div className="box-button">
+          <button
+            className="button-icon"
+            onClick={() => confirmDeleteExpense(item)}
+          >
+            <DeleteIcon size={24} color="#00a86b" />
+          </button>
+        </div>
+        <div className="box-text">
+          <label
+            className={itemPaid(item.paid) ? "title-paid" : "title"}
+            onClick={() => showExpenses(item)}
+          >
+            {item.title}
+          </label>
+          <label onClick={() => showExpenses(item)}>
+            {formatCurrency(item.value)}
+          </label>
+        </div>
+      </li>
+    );
+  }
+
   return (
     <div className="container">
       <Drawer setShow={setShowDrawer} show={showDrawer} />
@@ -281,31 +308,7 @@ export default function Expenses() {
       <ul className="content">
         <HeaderContent month={month} year={year} />
         <ul className="grid">
-          {expenses
-            ? expenses.map((item) => (
-                <li key={item.id} className="grid-item">
-                  <div className="box-button">
-                    <button
-                      className="button-icon"
-                      onClick={() => confirmDeleteExpense(item)}
-                    >
-                      <DeleteIcon size={24} color="#00a86b" />
-                    </button>
-                  </div>
-                  <div className="box-text">
-                    <label
-                      className={itemPaid(item.paid) ? "title-paid" : "title"}
-                      onClick={() => showExpenses(item)}
-                    >
-                      {item.title}
-                    </label>
-                    <label onClick={() => showExpenses(item)}>
-                      {formatCurrency(item.value)}
-                    </label>
-                  </div>
-                </li>
-              ))
-            : null}
+          {expenses ? expenses.map((item) => renderItem(item)) : null}
         </ul>
         <div className="action">
           <button

@@ -93,11 +93,11 @@ export default function Wallet() {
   }
 
   function deleteRevenue(item) {
-    // dispatch(allActions.revenue.deleteRevenue(item));
+    firestore.collection("revenues").doc(item.id).delete();
   }
 
-  function setRevenue(item) {
-    // dispatch(allActions.revenue.setRevenue(item));
+  function setRevenue(item, id) {
+    firestore.collection("revenues").doc(id).update(item);
   }
 
   function logout() {

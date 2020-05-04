@@ -17,6 +17,7 @@ import "./styles.css";
 
 import { useSelector } from "react-redux";
 import { useFirestoreConnect } from "react-redux-firebase";
+import { useMediaQuery } from "@material-ui/core";
 
 export default function HeaderContent({ month, year }) {
   const navigation = useHistory();
@@ -45,6 +46,8 @@ export default function HeaderContent({ month, year }) {
     parseFloat(expensesTotal);
   const [visible, setVisible] = useState(true);
 
+  const sizeNormal = useMediaQuery("(min-width:1000px)");
+
   useEffect(() => {
     getVisibility();
   }, []);
@@ -70,11 +73,13 @@ export default function HeaderContent({ month, year }) {
       return 0;
     }
 
-    var monthSelected = month ? month : new Date().getMonth();
-    var yearSelected = year ? year : new Date().getFullYear();
+    var dateSelected;
 
-    monthSelected = parseInt(monthSelected) + 1;
-    yearSelected = parseInt(yearSelected);
+    if (month && year) {
+      dateSelected = new Date(year, month);
+    } else {
+      dateSelected = new Date();
+    }
 
     var newArray = Object.keys(data).map((id) => {
       var item = { ...data[id], id };
@@ -103,36 +108,28 @@ export default function HeaderContent({ month, year }) {
 
       var parcels = item.parcels ? item.parcels - 1 : 0;
 
-      var itemMonth;
-      var itemYear;
+      var dateItem;
 
       if (item.date) {
-        itemMonth = parseInt(item.date.split("-")[1]) + parcels;
-        itemYear = parseInt(item.date.split("-")[0]);
+        dateItem = new Date(
+          item.date.toDate().getFullYear(),
+          item.date.toDate().getMonth() + parcels
+        );
       } else {
-        itemMonth = new Date().getMonth() + 1;
-        itemYear = new Date().getFullYear();
+        dateItem = new Date(new Date().getFullYear(), new Date().getMonth());
       }
-
-      //Calcular a diferenca entre o mes sendo mostrado e o mes do item
-      var diferenceMonth = monthSelected - itemMonth;
-      var diferenceYear = yearSelected - itemYear;
-      var diference = diferenceMonth + diferenceYear * 12;
 
       while (parcels >= 0) {
         if (
-          (itemMonth === monthSelected && itemYear === yearSelected) ||
-          (item.type === "continuous" && diference >= 0)
+          (dateItem.getMonth() === dateSelected.getMonth() &&
+            dateItem.getFullYear() === dateSelected.getFullYear()) ||
+          (item.type === "continuous" && dateItem <= dateSelected)
         )
           return item;
 
-        itemMonth--;
-        parcels--;
+        dateItem = new Date(dateItem - 2592000000);
 
-        if (itemMonth > 11) {
-          itemMonth = 0;
-          itemYear++;
-        }
+        parcels--;
       }
 
       return null;
@@ -152,7 +149,7 @@ export default function HeaderContent({ month, year }) {
   }
 
   return (
-    <li className="header-content">
+    <div className={sizeNormal ? "header-content" : "header-content-small"}>
       <div
         className={location === "dashboard" ? "selected" : ""}
         onClick={() => navigation.push("dashboard")}
@@ -210,6 +207,6 @@ export default function HeaderContent({ month, year }) {
           <InvisibleIcon size={28} color="#00A86b" />
         )}
       </button>
-    </li>
+    </div>
   );
 }

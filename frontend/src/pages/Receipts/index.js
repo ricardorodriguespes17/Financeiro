@@ -105,15 +105,15 @@ export default function Receipts() {
   }
 
   function deleteReceiptAll(item) {
-    // dispatch(allActions.receipt.deleteReceiptAll(item));
+    firestore.collection("receipts").doc(item.id).delete();
   }
 
-  function deleteReceiptNext(item) {
-    // dispatch(allActions.receipt.deleteReceiptNext(item));
+  function deleteReceiptNext(item, id) {
+    firestore.collection("receipts").doc(id).update(item);
   }
 
-  function setReceipt(item) {
-    // dispatch(allActions.receipt.setReceipt(item));
+  function setReceipt(item, id) {
+    firestore.collection("receipts").doc(id).update(item);
   }
 
   function mapMonthArray(array) {
@@ -121,11 +121,7 @@ export default function Receipts() {
       return [];
     }
 
-    var monthSelected = month;
-    var yearSelected = year;
-
-    monthSelected = parseInt(monthSelected) + 1;
-    yearSelected = parseInt(yearSelected);
+    var dateSelected = new Date(year, month);
 
     var newArray = Object.keys(array).map((id) => {
       var item = { ...array[id], id };
@@ -135,28 +131,23 @@ export default function Receipts() {
       }
 
       var parcels = item.parcels ? item.parcels - 1 : 0;
-      var itemMonth = parseInt(item.date.split("-")[1]) + parcels;
-      var itemYear = parseInt(item.date.split("-")[0]);
 
-      //Calcular a diferenca entre o mes sendo mostrado e o mes do item
-      var diferenceMonth = monthSelected - itemMonth;
-      var diferenceYear = yearSelected - itemYear;
-      var diference = diferenceMonth + diferenceYear * 12;
+      var dateItem = new Date(
+        item.date.toDate().getFullYear(),
+        item.date.toDate().getMonth() + parcels
+      );
 
       while (parcels >= 0) {
         if (
-          (itemMonth === monthSelected && itemYear === yearSelected) ||
-          (item.type === "continuous" && diference >= 0)
+          (dateItem.getMonth() === dateSelected.getMonth() &&
+            dateItem.getFullYear() === dateSelected.getFullYear()) ||
+          (item.type === "continuous" && dateItem <= dateSelected)
         )
           return item;
 
-        itemMonth--;
-        parcels--;
+        dateItem = new Date(dateItem - 2592000000);
 
-        if (itemMonth > 11) {
-          itemMonth = 0;
-          itemYear++;
-        }
+        parcels--;
       }
 
       return null;

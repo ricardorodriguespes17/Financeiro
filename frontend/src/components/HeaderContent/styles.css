@@ -10,7 +10,18 @@
   flex-direction: row;
 }
 
-.header-content button {
+.header-content-small {
+  background-color: var(--box-color);
+  width: 100%;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header-content button, .header-content-small button {
   width: 5%;
   height: 100%;
   display: flex;
@@ -31,32 +42,42 @@
   transition: filter 0.2s;
 }
 
-.header-content div:hover {
+.header-content-small div {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  margin-bottom: 10px;
+  align-items: center;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.header-content div:hover, .header-content-small div:hover {
   opacity: 0.5;
 }
 
-.header-content label {
+.header-content label, .header-content-small label {
   text-align: center;
   border-radius: 2px;
 }
 
-.header-content .visible-of {
+.header-content .visible-of, .header-content-small .visible-of {
   background-color: var(--tertiary-color);
   color: transparent;
 }
 
-.header-content .selected {
+.header-content .selected, .header-content-small .selected {
   font-weight: bold;
 }
 
-.header-content .profit-box-positive label, .header-content .profit-box-negative label {
+.header-content .profit-box-positive label, .header-content .profit-box-negative label, .header-content-small .profit-box-positive label, .header-content-small .profit-box-negative label {
   cursor: auto;
 }
 
-.header-content .profit-box-positive:hover, .header-content .profit-box-negative:hover {
+.header-content .profit-box-positive:hover, .header-content .profit-box-negative:hover, .header-content-small .profit-box-positive:hover, .header-content-small .profit-box-negative:hover {
   opacity: 1;
 }
 
-.header-content .profit-box-negative {
+.header-content .profit-box-negative, .header-content-small .profit-box-negative {
   color: #FF0000;
 }

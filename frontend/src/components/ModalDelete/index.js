@@ -24,32 +24,35 @@ export default function ModalDelete({
     if (type === "all") {
       onDeleteAll(itemSelected);
     } else {
-      var item = itemSelected;
-      var itemMonth = item.date.split("-")[1] - 1;
-      var itemYear = item.date.split("-")[0];
-      var month;
-      var year;
+      var id = itemSelected.id;
+      var item = {
+        title: itemSelected.title,
+        description: itemSelected.description,
+        type: itemSelected.type,
+        date: itemSelected.date,
+        paid: itemSelected.paid,
+        parcels: itemSelected.parcels,
+        value: itemSelected.value,
+        uid: itemSelected.uid,
+      };
 
-      if (currentMonth) month = currentMonth;
-      else month = new Date().getMonth();
+      var dateSelected = new Date(currentYear, currentMonth);
+      var dateItem = new Date(
+        item.date.toDate().getFullYear(),
+        item.date.toDate().getMonth()
+      );
 
-      if (currentYear) year = currentYear;
-      else year = new Date().getFullYear();
+      var diference = Math.floor((dateSelected - dateItem) / 2592000000) + 1;
 
-      var diferenceMonth = month - itemMonth;
-      var diferenceYear = (year - itemYear) * 12;
-
-      var diference = diferenceMonth + diferenceYear;
-
-      item.parcels = diference;
+      item.parcels -= diference;
 
       if (item.parcels === 0) {
         onDeleteAll(item);
       } else if (item.parcels === 1) {
         item.type = "unique";
-        onDeleteNext(item);
+        onDeleteNext(item, id);
       } else {
-        onDeleteNext(item);
+        onDeleteNext(item, id);
       }
     }
 
